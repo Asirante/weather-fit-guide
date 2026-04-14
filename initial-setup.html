@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS & GitHub 초기 세팅 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
+        body { font-family: 'Pretendard', sans-serif; scroll-behavior: smooth; }
+        .sticky-toc { position: sticky; top: 2rem; }
+        .warning-box { border-left: 4px solid #f59e0b; background-color: #fffbeb; }
+        .info-box { border-left: 4px solid #3b82f6; background-color: #eff6ff; }
+        .success-box { border-left: 4px solid #10b981; background-color: #ecfdf5; }
+        
+        /* 인라인 코드 스타일 */
+        code { 
+            background-color: transparent; 
+            padding: 0; 
+            border-radius: 0; 
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.95em; 
+            color: #2563eb; 
+            font-weight: 700;
+            border: none;
+        }
+        
+        pre code {
+            color: #f9fafb;
+            font-weight: 400;
+            font-size: inherit;
+        }
+        
+        pre { background-color: #1f2937; color: #f9fafb; padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; font-family: 'Courier New', Courier, monospace; line-height: 1.5; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .step-badge { background-color: #3b82f6; color: white; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.75rem; font-weight: bold; margin-right: 0.5rem; }
+        .role-tag { font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+        
+        /* 브랜치 트리 전용 스타일 */
+        .branch-tree {
+            white-space: pre;
+            line-height: 1.8;
+            font-family: ui-monospace, monospace;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 leading-relaxed">
+
+    <div class="max-w-6xl mx-auto px-4 py-12 flex flex-col md:flex-row gap-8">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="md:w-1/4">
+            <div class="sticky-toc p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-list-ul text-blue-600"></i> 목차
+                </h2>
+                <nav class="space-y-2 text-sm">
+                    <a href="#overview" class="block hover:text-blue-600 py-1 transition-colors font-semibold">1. 문서 개요</a>
+                    <a href="#github-repo" class="block hover:text-blue-600 py-1 transition-colors font-semibold">2. GitHub 레포지토리 구성</a>
+                    <a href="#oidc-setup" class="block hover:text-blue-600 py-1 transition-colors font-semibold">3. GitHub Actions & OIDC 연동</a>
+                    <a href="#sam-collab" class="block hover:text-blue-600 py-1 transition-colors font-semibold">4. AWS SAM & 협업 가이드</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="md:w-3/4 space-y-12">
+            
+            <!-- Header -->
+            <header class="text-center md:text-left mb-8">
+                <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mb-4">프로젝트 초기 세팅 가이드 v1.3</div>
+                <h1 class="text-4xl font-extrabold tracking-tight mb-2 text-gray-900">날씨 기반 생활 추천 서비스</h1>
+                <p class="text-gray-500 italic text-lg text-justify md:text-left">inhatc-team2 모노레포 자동화 배포 및 협업 가이드라인</p>
+                <div class="mt-6 flex flex-wrap gap-4 text-sm text-gray-600 justify-center md:justify-start">
+                    <span class="flex items-center gap-1 bg-white px-3 py-1 rounded-full border shadow-sm"><i class="far fa-calendar-alt text-blue-500"></i> 2026년 4월 9일 업데이트</span>
+                    <span class="flex items-center gap-1 bg-white px-3 py-1 rounded-full border shadow-sm"><i class="fas fa-users text-blue-500"></i> 팀원 5명 협업 기준</span>
+                </div>
+            </header>
+
+            <!-- 1. 문서 개요 -->
+            <section id="overview" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-4">
+                    <span class="text-blue-600">01.</span> 문서 개요
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <span class="text-xs font-bold text-gray-400 block uppercase mb-1">Architecture</span>
+                        <p class="font-semibold text-gray-800">Vue.js + FastAPI + AWS Serverless</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <span class="text-xs font-bold text-gray-400 block uppercase mb-1">Target Repo</span>
+                        <p class="font-semibold text-gray-800 font-mono">Asirante/weather-fit</p>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 warning-box rounded-lg flex gap-3">
+                    <i class="fas fa-exclamation-triangle text-amber-500 mt-1"></i>
+                    <div>
+                        <p class="font-bold text-amber-900 uppercase text-xs">Essential Check</p>
+                        <p class="text-sm text-amber-800 font-medium">모든 팀원이 동일한 리전(<code>us-east-1</code>)을 사용해야 합니다. 리전이 다르면 데이터 전송 비용이 발생하며 서비스 간 연동이 불가능할 수 있습니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. GitHub 레포지토리 구성 -->
+            <section id="github-repo" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-4">
+                    <span class="text-blue-600">02.</span> GitHub 레포지토리 구성
+                </h2>
+                
+                <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-gray-700">
+                    <i class="fas fa-folder-tree text-blue-500"></i> 2.1 모노레포 폴더 구조
+                </h3>
+                <pre><code>project-root/
+├── .github/workflows/       # GitHub Actions 워크플로 (FE/BE/DATA)
+├── frontend/                # Vue.js 3 + Tailwind CSS
+├── backend/                 # FastAPI + Mangum (API 로직)
+├── data_pipeline/           # EventBridge + Lambda (ETL)
+├── infra/                   # SAM template.yaml (공통 인프라 정의)
+└── README.md</code></pre>
+            </section>
+
+            <!-- 3. GitHub Actions & OIDC 연동 -->
+            <section id="oidc-setup" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-4">
+                    <span class="text-blue-600">03.</span> GitHub Actions & OIDC 연동
+                </h2>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-gray-800">
+                            <span class="step-badge">1</span> GitHub Secrets에 Role ARN 등록 <span class="role-tag bg-blue-100 text-blue-600 uppercase">Team Leader</span>
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-3">학교 측으로부터 발급받은 배포용 <code>IAM Role ARN</code>을 깃허브에 등록합니다.</p>
+                        <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside bg-gray-50 p-4 rounded-xl border">
+                            <li><strong>Path:</strong> Settings > Secrets and variables > Actions</li>
+                            <li><strong>Name:</strong> <code>AWS_ROLE_ARN</code></li>
+                            <li><strong>Value:</strong> <code>arn:aws:iam::[계정ID]:role/[역할이름]</code></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-gray-800">
+                            <span class="step-badge">2</span> 워크플로 YAML 권한 설정 <span class="role-tag bg-emerald-100 text-emerald-600 uppercase">All Members</span>
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-4">OIDC 토큰 발급을 위해 각 <code>.yml</code> 파일의 <code>jobs</code> 하위에 아래 권한 블록을 반드시 추가합니다.</p>
+                        <pre><code>jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-gray-800">
+                            <span class="step-badge">3</span> AWS 로그인 스텝 추가
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-4 leading-relaxed">배포 명령어 실행 직전에 <code>aws-actions/configure-aws-credentials</code>를 배치합니다.</p>
+                        <pre><code>- name: Configure AWS credentials using OIDC
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+    aws-region: us-east-1</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. AWS SAM & 협업 가이드 -->
+            <section id="sam-collab" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-4">
+                    <span class="text-blue-600">04.</span> AWS SAM & 협업 가이드
+                </h2>
+                
+                <div class="space-y-10">
+                    <!-- 브랜치 전략 -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-800">
+                            <i class="fas fa-code-branch text-blue-500"></i> 브랜치 운영 및 병합 규칙
+                        </h3>
+                        <div class="bg-gray-800 text-green-400 p-6 rounded-xl shadow-inner overflow-x-auto">
+                            <div class="branch-tree">main ------------------ 운영 배포 (직접 Push 절대 금지)
+  ㄴ develop ---------- 통합 테스트 / 개발 배포
+       ㄴ feature/* --- 개별 기능 개발 (feature/weather-api 등)</div>
+                        </div>
+                        <ul class="mt-4 text-sm space-y-3 text-gray-700">
+                            <li class="flex items-start gap-2"><i class="fas fa-check-circle text-blue-500 mt-1"></i> <strong>PR 필수:</strong> <code>feature/*</code>에서 <code>develop</code> 병합 시 최소 1명 이상의 리뷰 승인이 필요합니다.</li>
+                            <li class="flex items-start gap-2"><i class="fas fa-check-circle text-blue-500 mt-1"></i> <strong>Squash and Merge:</strong> 커밋 로그 관리를 위해 반드시 <code>Squash and merge</code> 방식을 선택하세요.</li>
+                        </ul>
+                    </div>
+
+                    <!-- SAM 명령어 -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-800">
+                            <i class="fas fa-terminal text-blue-500"></i> AWS SAM 핵심 워크플로
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 border border-blue-100 bg-blue-50/30 rounded-xl">
+                                <h4 class="font-bold text-sm text-blue-800 mb-2">로컬 빌드 및 테스트</h4>
+                                <code class="block text-xs py-1">sam build</code>
+                                <code class="block text-xs py-1">sam local start-api</code>
+                            </div>
+                            <div class="p-4 border border-green-100 bg-green-50/30 rounded-xl">
+                                <h4 class="font-bold text-sm text-green-800 mb-2">배포 및 상태 확인</h4>
+                                <code class="block text-xs py-1">sam deploy --guided</code>
+                                <code class="block text-xs py-1">sam logs -n WeatherApi</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 배포 액션 플랜 (명령어 가독성 개선) -->
+                    <div class="info-box p-8 rounded-xl shadow-sm">
+                        <p class="font-bold text-blue-900 mb-6 flex items-center gap-2 text-lg">
+                            <i class="fas fa-paper-plane"></i> 실제 배포 명령어 (YAML 반영용)
+                        </p>
+                        <div class="space-y-8">
+                            <!-- Frontend Section -->
+                            <div>
+                                <h5 class="text-sm font-bold text-blue-700 uppercase mb-3 flex items-center gap-2">
+                                    <i class="fas fa-desktop"></i> Frontend (S3 + CloudFront)
+                                </h5>
+                                <pre class="text-sm md:text-base p-5"><code>aws s3 sync frontend/dist/ s3://[본인-S3-버킷명] --delete
+aws cloudfront create-invalidation --distribution-id [ID] --paths "/*"</code></pre>
+                            </div>
+                            
+                            <!-- Backend Section -->
+                            <div>
+                                <h5 class="text-sm font-bold text-purple-700 uppercase mb-3 flex items-center gap-2">
+                                    <i class="fas fa-server"></i> Backend (AWS Lambda)
+                                </h5>
+                                <pre class="text-sm md:text-base p-5"><code>aws lambda update-function-code \
+  --function-name [본인-람다-함수명] \
+  --zip-file fileb://deploy.zip</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-20 py-12 border-t border-gray-200 text-center bg-white shadow-inner">
+        <div class="max-w-6xl mx-auto px-4">
+            <p class="text-gray-900 font-bold mb-2 tracking-tight uppercase text-sm">Weather-Life Project Team 2</p>
+            <p class="text-gray-400 text-xs italic">본 가이드라인은 us-east-1 리전 및 inhatc-team2 OIDC 정책을 준수합니다.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

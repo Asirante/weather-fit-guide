@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team 2 API 데이터 규약</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">📊 API 데이터 수집 규약</h1>
+            <p class="text-lg text-slate-500">데이터 엔지니어 수집 기준 실시간 기상청 및 에어코리아 데이터 정보입니다.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- 기상청 -->
+            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-blue-50 border-b border-slate-200 p-6 flex items-center gap-3">
+                    <div class="bg-blue-500 text-white p-2 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">기상청 (초단기실황)</h2>
+                </div>
+                <div class="p-0 overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold uppercase">Key</th>
+                                <th class="px-6 py-4 font-semibold uppercase">설명</th>
+                                <th class="px-6 py-4 font-semibold uppercase">단위</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-mono font-bold text-blue-600">T1H</td>
+                                <td class="px-6 py-4 text-slate-700">기온</td>
+                                <td class="px-6 py-4 text-slate-500">℃</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-mono font-bold text-blue-600">RN1</td>
+                                <td class="px-6 py-4 text-slate-700">1시간 강수량</td>
+                                <td class="px-6 py-4 text-slate-500">mm</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-mono font-bold text-blue-600">UUU</td>
+                                <td class="px-6 py-4 text-slate-700">동서바람성분</td>
+                                <td class="px-6 py-4 text-slate-500">m/s</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-mono font-bold text-blue-600">VVV</td>
+                                <td class="px-6 py-4 text-slate-700">남북바람성분</td>
+                                <td class="px-6 py-4 text-slate-500">m/s</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-mono font-bold text-blue-600">REH</td>
+                                <td class="px-6 py-4 text-slate-700">습도</td>
+                                <td class="px-6 py-4 text-slate-500">%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-mono font-bold text-blue-600">PTY</td>
+                                <td class="px-6 py-4 text-slate-700">강수형태</td>
+                                <td class="px-6 py-4 text-slate-400 italic">-</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-mono font-bold text-blue-600">VEC</td>
+                                <td class="px-6 py-4 text-slate-700">풍향</td>
+                                <td class="px-6 py-4 text-slate-500">deg</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-mono font-bold text-blue-600">WSD</td>
+                                <td class="px-6 py-4 text-slate-700">풍속</td>
+                                <td class="px-6 py-4 text-slate-500">m/s</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 에어코리아 -->
+            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-teal-50 border-b border-slate-200 p-6 flex items-center gap-3">
+                    <div class="bg-teal-500 text-white p-2 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 15.536c-1.171 1.952-3.07 1.952-4.242 0-1.172-1.953-1.172-5.119 0-7.072 1.171-1.952 3.07-1.952 4.242 0M8 10.5h4m-4 3h4m9-1.5a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">에어코리아 (대기질)</h2>
+                </div>
+                <div class="p-0 overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold uppercase">Key</th>
+                                <th class="px-6 py-4 font-semibold uppercase">설명</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-mono font-bold text-teal-600">coValue</td>
+                                <td class="px-6 py-3 text-slate-700">일산화탄소 농도</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/50">
+                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">coGrade</td>
+                                <td class="px-6 py-3 text-slate-600">일산화탄소 지수</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-mono font-bold text-teal-600">khaiValue</td>
+                                <td class="px-6 py-3 text-slate-700">통합대기환경수치</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/50">
+                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">khaiGrade</td>
+                                <td class="px-6 py-3 text-slate-600">통합대기환경지수</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-mono font-bold text-teal-600">no2Value</td>
+                                <td class="px-6 py-3 text-slate-700">이산화질소 농도</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/50">
+                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">no2Grade</td>
+                                <td class="px-6 py-3 text-slate-600">이산화질소 지수</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-mono font-bold text-teal-600">o3Value</td>
+                                <td class="px-6 py-3 text-slate-700">오존 농도</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/50">
+                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">o3Grade</td>
+                                <td class="px-6 py-3 text-slate-600">오존 지수</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-mono font-bold text-teal-600">so2Value</td>
+                                <td class="px-6 py-3 text-slate-700">아황산가스 농도</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/50">
+                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">so2Grade</td>
+                                <td class="px-6 py-3 text-slate-600">아황산가스 지수</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-mono font-bold text-teal-600">pm10Value</td>
+                                <td class="px-6 py-3 text-slate-700">미세먼지(PM10) 농도</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/50">
+                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">pm10Grade</td>
+                                <td class="px-6 py-3 text-slate-600">미세먼지(PM10) 24시간 등급</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-mono font-bold text-teal-600">pm25Value</td>
+                                <td class="px-6 py-3 text-slate-700">미세먼지(PM2.5) 농도</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/50">
+                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">pm25Grade</td>
+                                <td class="px-6 py-3 text-slate-600">미세먼지(PM2.5) 24시간 등급</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="index.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                문서 포털로 돌아가기
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

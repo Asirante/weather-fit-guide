@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team 2: Phase 2 데이터 분석 고도화 (Advancement)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .service-tag { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        .tag-storage { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
+        .tag-analytics { background-color: #e0f2fe; color: #075985; border: 1px solid #bae6fd;}
+        .tag-compute { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+    </style>
+</head>
+<body class="text-slate-800 antialiased p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Phase 2: Advancement</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">📈 데이터 파이프라인 최적화 및 분석 구축</h1>
+            <p class="text-lg text-slate-500">MVP 이후, Parquet 변환 및 Amazon Athena를 활용한 빅데이터 분석 아키텍처 명세서</p>
+        </header>
+
+        <!-- Data Architecture Diagram -->
+        <section class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                데이터 분석 파이프라인 흐름도 (ETL & Query)
+            </h2>
+            
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                <!-- Source -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center w-full md:w-56">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Phase 1 Data</span>
+                    <div class="font-semibold text-slate-700 mt-1">Raw Data (S3)</div>
+                    <div class="text-[10px] text-pink-500 bg-slate-50 rounded mt-2 p-1 border border-slate-100">inhatc-team2-5-raw-data</div>
+                    <div class="text-xs text-slate-500 mt-1">JSON 포맷 (비정형)</div>
+                </div>
+
+                <svg class="w-6 h-6 text-slate-400 rotate-90 md:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+
+                <!-- ETL -->
+                <div class="bg-indigo-500 text-white p-4 rounded-xl shadow-sm text-center w-full md:w-56 relative">
+                    <span class="text-xs font-bold text-indigo-200 uppercase">ETL / Automation</span>
+                    <div class="font-semibold mt-1">AWS Glue (or Lambda)</div>
+                    <div class="text-[11px] bg-indigo-600 text-indigo-100 rounded mt-2 p-1">JSON &rarr; Parquet 변환</div>
+                    <div class="text-xs text-indigo-100 mt-1">압축 및 정제 자동화</div>
+                </div>
+
+                <svg class="w-6 h-6 text-slate-400 rotate-90 md:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+
+                <!-- Data Lake & Analytics -->
+                <div class="flex flex-col gap-3 w-full md:w-56">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border-2 border-green-200 text-center">
+                        <span class="text-xs font-bold text-green-600 uppercase">Optimized Storage</span>
+                        <div class="font-semibold text-slate-700 mt-1">Parquet Data (S3)</div>
+                        <div class="text-[10px] text-green-600 bg-green-50 rounded mt-2 p-1 border border-green-100 font-mono">inhatc-team2-3-parquet-data</div>
+                    </div>
+                    <div class="bg-slate-800 text-white p-3 rounded-xl shadow-sm text-center border-t-4 border-blue-400">
+                        <div class="font-semibold text-sm">Amazon Athena</div>
+                        <div class="text-[11px] text-slate-300 mt-1">표준 SQL 쿼리 분석</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Role Breakdown -->
+        <section>
+            <!-- Data Analysis (박근령) -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 hover:shadow-lg transition-shadow relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 text-purple-50 opacity-50 pointer-events-none">
+                    <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    <div class="flex-1">
+                        <div class="mb-6">
+                            <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Data Analysis (Phase 2)</span>
+                            <h3 class="text-2xl font-bold text-slate-900 mt-3 mb-1">👩‍💻 박근령 <span class="text-base font-normal text-slate-500 ml-1">(inhatc-team2-3)</span></h3>
+                            <p class="text-slate-600 font-medium">데이터 레이크 구축 및 BI(Business Intelligence) 기반 마련</p>
+                        </div>
+
+                        <div class="mb-6">
+                            <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">할당된 주요 리소스</h4>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-3">
+                                <div class="bg-green-100 p-2 rounded-lg text-green-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500 font-semibold mb-0.5">정제된 데이터 저장소 (S3 Bucket)</div>
+                                    <code class="text-sm font-bold text-slate-800 font-mono">inhatc-team2-3-parquet-data</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">활용할 AWS 서비스</h4>
+                            <div class="flex flex-wrap">
+                                <span class="service-tag tag-storage">Amazon S3</span>
+                                <span class="service-tag tag-analytics">AWS Glue</span>
+                                <span class="service-tag tag-compute">AWS Lambda (선택)</span>
+                                <span class="service-tag tag-analytics">Amazon Athena</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- To-Do List Card -->
+                    <div class="flex-1 bg-white border-2 border-purple-100 rounded-2xl p-6 shadow-sm">
+                        <h4 class="text-sm font-bold text-purple-600 uppercase tracking-wider mb-4 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            실무 수행 리스트 (To-Do)
+                        </h4>
+                        <ul class="space-y-4 text-sm text-slate-700">
+                            <li class="flex items-start gap-3">
+                                <div class="bg-purple-100 text-purple-600 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">1</div>
+                                <div>
+                                    <strong class="block text-slate-900 mb-0.5">타겟 S3 버킷 생성</strong>
+                                    압축 효율과 쿼리 성능이 높은 Parquet 데이터를 저장하기 위해 본인의 식별자가 포함된 <code class="text-xs text-purple-600 bg-purple-50 px-1 py-0.5 rounded">inhatc-team2-3-parquet-data</code> 버킷을 생성합니다.
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div class="bg-purple-100 text-purple-600 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">2</div>
+                                <div>
+                                    <strong class="block text-slate-900 mb-0.5">Parquet 변환 파이프라인 구축</strong>
+                                    AWS Glue (또는 S3 Event Trigger 기반 Lambda)를 사용하여 <code class="text-xs text-pink-500 bg-slate-50 px-1">team2-5-raw-data</code>(JSON)에 데이터가 들어오면 이를 컬럼형 포맷인 <strong>Parquet</strong>으로 변환하여 새 버킷에 적재하도록 자동화합니다.
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div class="bg-purple-100 text-purple-600 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">3</div>
+                                <div>
+                                    <strong class="block text-slate-900 mb-0.5">데이터 카탈로그화 (Glue Crawler)</strong>
+                                    저장된 Parquet 데이터의 스키마(테이블 구조)를 자동으로 추론하고 인식하기 위해 <strong>AWS Glue Crawler</strong>를 구성하고 실행하여 Athena에서 읽을 수 있는 Data Catalog를 생성합니다.
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div class="bg-purple-100 text-purple-600 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">4</div>
+                                <div>
+                                    <strong class="block text-slate-900 mb-0.5">Athena 기반 분석 쿼리 작성</strong>
+                                    Amazon Athena에서 표준 SQL 쿼리를 작성하여 날씨 변화 추이, 대기질 악화 빈도 등 인사이트를 도출하고 쿼리 실행 속도 및 스캔 용량(비용)이 JSON 대비 얼마나 절감되었는지 검증합니다.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>

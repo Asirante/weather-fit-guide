@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team 2: AWS 실무 활용 및 작업 명세서</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .service-tag { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        .tag-compute { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+        .tag-storage { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
+        .tag-database { background-color: #dbeafe; color: #1e3a8a; border: 1px solid #bfdbfe;}
+        .tag-ai { background-color: #f3e8ff; color: #581c87; border: 1px solid #e9d5ff;}
+        .tag-network { background-color: #ffedd5; color: #9a3412; border: 1px solid #fed7aa;}
+        .tag-analytics { background-color: #e0f2fe; color: #075985; border: 1px solid #bae6fd;}
+    </style>
+</head>
+<body class="text-gray-800 antialiased p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500"></div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight mt-2">🌤️ Team 2 AWS 실무 구축 가이드</h1>
+            <p class="text-lg text-gray-500 mb-6">각 팀원별 사용해야 할 AWS 서비스와 구체적인 To-Do 리스트</p>
+            
+        </header>
+
+        <!-- Section: Resource Request Guide -->
+        <section class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                📌 리소스 생성 가이드
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-600 text-sm uppercase tracking-wide">
+                            <th class="p-3 border-b border-gray-200 rounded-tl-lg">리소스 종류</th>
+                            <th class="p-3 border-b border-gray-200">추천 리소스 이름</th>
+                            <th class="p-3 border-b border-gray-200">용도</th>
+                            <th class="p-3 border-b border-gray-200 rounded-tr-lg">요청 담당자</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-gray-700">
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-green-700">S3 버킷</td>
+                            <td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">inhatc-team2-5-raw-data</code></td>
+                            <td class="p-3">API로 받아온 raw 데이터 저장 용도</td>
+                            <td class="p-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-green-700">S3 버킷</td>
+                            <td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">inhatc-team2-4-frontend</code></td>
+                            <td class="p-3">프론트엔드 정적 웹(React/Vue) 배포 호스팅용</td>
+                            <td class="p-3 font-bold text-orange-600">최혁 (Front)</td>
+                        </tr>
+						<tr class="border-b border-gray-100 hover:bg-gray-50">
+							<td class="p-3 font-semibold text-green-700">S3 버킷</td>
+							<td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">inhatc-team2-3-parquet-data</code></td>
+							<td class="p-3">JSON 원본 데이터를 압축 및 쿼리 최적화된 Parquet 포맷으로 변환하여 저장하는 분석용 데이터 레이크</td>
+							<td class="p-3 font-bold text-purple-800">박근령 (Data)</td>
+						</tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-blue-700">DynamoDB</td>
+                            <td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">team2-weather-cache</code></td>
+                            <td class="p-3">현재 날씨 상태 저장 용도 (PK: 지역코드 등)</td>
+                            <td class="p-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-blue-700">DynamoDB</td>
+                            <td class="p-3"><code class="bg-gray-100 text-teal-600 px-2 py-1 rounded">team2-air-cache</code></td>
+                            <td class="p-3">현재 대기 상태 저장 용도 (PK: 지역코드 등)</td>
+                            <td class="p-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-blue-700">DynamoDB</td>
+                            <td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">team2-ai-prompt-cache</code></td>
+                            <td class="p-3">AI 답변 캐싱용 (PK: 기상패턴, 예: Clear_25C)</td>
+                            <td class="p-3 font-bold text-green-600">고원영 (Backend)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section: Roles and Action Plans -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Data Engineer (김호건) -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 hover:shadow-lg transition-shadow relative">
+                <div class="absolute top-8 right-8 text-blue-100">
+                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M19.33 10.18a7 7 0 00-13.66 0A5 5 0 006 20h12a5 5 0 001.33-9.82zM12 18H6a3 3 0 010-6 2 2 0 002-2 5 5 0 0110 0 2 2 0 002 2 3 3 0 01-8 6z"></path></svg>
+                </div>
+                <div class="mb-6 relative z-10">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Data Engineer</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-3 mb-1">👨‍💻 김호건 <span class="text-sm font-normal text-gray-500">(inhatc-team2-5)</span></h3>
+                    <p class="text-gray-600 font-medium">데이터 수집 파이프라인 구축</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">활용할 AWS 서비스</h4>
+                    <div class="flex flex-wrap">
+                        <span class="service-tag tag-compute">Lambda (수집용)</span>
+                        <span class="service-tag tag-compute">EventBridge</span>
+                        <span class="service-tag tag-storage">S3 (Raw Data)</span>
+                        <span class="service-tag tag-database">DynamoDB (기상/대기 캐시)</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 relative z-10">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider">실무 수행 리스트 (To-Do)</h4>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-blue-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>데이터 수집 로직 작성:</strong> 4개 기상청 API를 호출하여 날씨/대기질 데이터를 가져오는 Python 코문을 Lambda에 배포합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>스케줄러 연동:</strong> EventBridge를 사용해 매 시간(또는 특정 주기)마다 위 Lambda가 자동으로 실행되도록 규칙(Rule)을 설정합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>데이터 적재 (S3):</strong> API에서 받아온 원본 JSON 데이터를 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">raw-data</code>)에 누적 저장합니다. (추후 분석 엔지니어가 활용할 수 있도록)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>상태 업데이트 (DynamoDB):</strong> 프론트가 즉시 읽어갈 수 있도록 가공된 현재 날씨(weather-cache) 및 대기 상태(air-cache) 데이터를 분리된 DynamoDB 테이블에 업데이트(PutItem) 합니다.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Backend & Infra (고원영) -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 hover:shadow-lg transition-shadow relative">
+                <div class="absolute top-8 right-8 text-green-100">
+                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                </div>
+                <div class="mb-6 relative z-10">
+                    <span class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Backend & Infra</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-3 mb-1">👨‍💻 고원영 <span class="text-sm font-normal text-gray-500">(inhatc-team2-1)</span></h3>
+                    <p class="text-gray-600 font-medium">비즈니스 로직 API 및 AI 캐싱 구현</p>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">활용할 AWS 서비스</h4>
+                    <div class="flex flex-wrap">
+                        <span class="service-tag tag-compute">Lambda (서버용)</span>
+                        <span class="service-tag tag-compute">Function URL</span>
+                        <span class="service-tag tag-database">DynamoDB (AI 캐시)</span>
+                        <span class="service-tag tag-ai">Bedrock (API 연동)</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 relative z-10">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider">실무 수행 리스트 (To-Do)</h4>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>서버리스 API 구축:</strong> FastAPI 프레임워크와 Mangum 어댑터를 활용하여 Lambda 기반의 백엔드 코드를 작성 및 배포합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>엔드포인트 생성:</strong> API Gateway 대신 Lambda Function URL을 활성화하여 프론트엔드가 호출할 수 있는 HTTP 주소를 만듭니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>캐싱 로직 구현 (핵심):</strong> 프론트의 요청이 오면 기상패턴(예: 맑음_25도)을 Key로 DynamoDB(<code class="text-xs text-pink-500 bg-gray-50 px-1">ai-prompt-cache</code>)를 조회합니다. 데이터가 있으면 즉시 반환(캐시 Hit)합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>AI 호출 및 적재:</strong> 캐시(DB)에 없는 신규 날씨인 경우, Bedrock API를 호출해 추천을 받고, 이 결과를 DB에 저장한 후 프론트에 반환합니다.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Data Analysis (박근령) -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 hover:shadow-lg transition-shadow relative">
+                <div class="absolute top-8 right-8 text-purple-100">
+                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
+                <div class="mb-6 relative z-10">
+                    <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">AI / Data Analysis</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-3 mb-1">👩‍💻 박근령 <span class="text-sm font-normal text-gray-500">(inhatc-team2-4)</span></h3>
+                    <p class="text-gray-600 font-medium">AI 프롬프트 최적화 및 Data Lake 관리 분석</p>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">활용할 AWS 서비스</h4>
+                    <div class="flex flex-wrap">
+                        <span class="service-tag tag-ai">Amazon Bedrock</span>
+                        <span class="service-tag tag-analytics">AWS Glue</span>
+                        <span class="service-tag tag-analytics">Amazon Athena</span>
+                        <span class="service-tag tag-ai">SageMaker Notebook</span>
+                        <span class="service-tag tag-database">DynamoDB</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 relative z-10">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider">실무 수행 리스트 (To-Do)</h4>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-purple-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>AI 프롬프트 설계:</strong> Bedrock 플레이그라운드에서 날씨 데이터를 변수로 넣어 공식적이고 환각 없는 의상 추천이 나오도록 프롬프트를 고도화합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-purple-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>Glue 데이터 카탈로그 생성:</strong> 데이터 엔지니어가 수집한 S3 원본 데이터의 스키마를 추출하고 분석 가능한 테이블 형태로 매핑하기 위해 AWS Glue 크롤러(Crawler)를 세팅합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-purple-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>Athena 데이터 쿼리:</strong> Glue로 매핑된 S3 원본 데이터를 Amazon Athena를 통해 표준 SQL로 쿼리하여 주요 기상 패턴과 통계 인사이트를 분석합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-purple-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>심화 분석 및 검수:</strong> (필요시) SageMaker Notebook을 통해 분석 환경을 구성하고, DynamoDB에 쌓이는 AI 추천 내역을 모니터링하여 가이드라인을 정제합니다.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Front & Network (최혁) -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 hover:shadow-lg transition-shadow relative">
+                <div class="absolute top-8 right-8 text-orange-100">
+                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                </div>
+                <div class="mb-6 relative z-10">
+                    <span class="bg-orange-100 text-orange-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Front & Network</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-3 mb-1">👨‍💻 최혁 <span class="text-sm font-normal text-gray-500">(inhatc-team2-3)</span></h3>
+                    <p class="text-gray-600 font-medium">UI/UX 및 CDN 보안 인프라 구축</p>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">활용할 AWS 서비스</h4>
+                    <div class="flex flex-wrap">
+                        <span class="service-tag tag-storage">S3 (Web Hosting)</span>
+                        <span class="service-tag tag-network">CloudFront</span>
+                        <span class="service-tag tag-network">Route53</span>
+                        <span class="service-tag tag-network">ACM (HTTPS)</span>
+                        <span class="service-tag tag-network">WAFv2</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 relative z-10">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider">실무 수행 리스트 (To-Do)</h4>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>정적 웹 배포:</strong> React 등으로 개발한 프론트엔드 빌드 파일을 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">frontend</code>)에 업로드하여 호스팅의 뼈대를 잡습니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>CDN 연동:</strong> CloudFront를 생성하고 OAC(Origin Access Control)를 설정하여 S3에 직접 접근을 막고 엣지 캐싱을 적용합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>도메인 & HTTPS:</strong> Route53에서 커스텀 도메인을 연결하고, ACM에서 발급받은 인증서를 CloudFront에 붙여 HTTPS 보안 처리를 합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2 mt-0.5">✅</span>
+                            <span><strong>보안 방화벽:</strong> WAF(웹 방화벽)를 생성하여 CloudFront 앞단에 배치, 악성 요청(DDoS 등)을 차단합니다.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

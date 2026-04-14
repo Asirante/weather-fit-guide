@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub & AWS SAM 협업 가이드 - inhatc-team2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed p-6">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-200">
+        
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-8">
+            <h1 class="text-3xl font-bold mb-2"><i class="fab fa-github mr-3"></i>weather-fit 협업 & SAM 가이드</h1>
+            <p class="text-teal-100 text-lg">안전한 브랜치 관리와 AWS SAM 기반의 효율적인 개발 프로세스</p>
+        </header>
+
+        <!-- Content -->
+        <div class="p-8 space-y-10">
+
+            <!-- Section 1: Branch Strategy -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 border-b-2 border-emerald-500 pb-2 mb-4">1. 브랜치 전략 및 병합 규칙</h2>
+                
+                <div class="bg-slate-800 text-green-400 p-5 rounded-lg font-mono text-sm mb-6 overflow-x-auto whitespace-pre">
+main ------------------ 운영 환경 (실제 서비스 배포용)
+  ㄴ develop ---------- 통합 테스트 / 개발 환경 (기본 브랜치)
+       ㄴ feature/* --- 개별 기능 및 Lambda 함수 개발</div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                        <h3 class="font-bold text-blue-800 mb-2 flex items-center">
+                            <i class="fas fa-code-branch mr-2"></i> 기능 개발 (feature &rarr; develop)
+                        </h3>
+                        <ul class="text-sm text-blue-900 space-y-2">
+                            <li>• <strong>PR(Pull Request)</strong> 생성 필수</li>
+                            <li>• 팀원 <strong>최소 1명 이상의 Approve</strong> 승인</li>
+                            <li>• <strong>Squash and Merge</strong>로 기록 단순화</li>
+                        </ul>
+                    </div>
+                    <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-100">
+                        <h3 class="font-bold text-emerald-800 mb-2 flex items-center">
+                            <i class="fas fa-rocket mr-2"></i> 운영 배포 (develop &rarr; main)
+                        </h3>
+                        <ul class="text-sm text-emerald-900 space-y-2">
+                            <li>• <strong>통합 테스트 완료</strong> 후 진행</li>
+                            <li>• GitHub Actions <strong>CI/CD 통과 확인</strong></li>
+                            <li>• 병합 즉시 <strong>AWS 운영 서버 자동 배포</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: AWS SAM Local Development -->
+            <section class="bg-indigo-50 border border-indigo-100 p-6 rounded-xl">
+                <h2 class="text-xl font-bold text-indigo-900 mb-4"><i class="fas fa-cloud mr-2"></i>2. AWS SAM 로컬 개발 가이드</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <span class="text-[10px] font-bold text-indigo-500 block mb-1">STEP 1. 소스 빌드</span>
+                        <code class="block bg-gray-100 p-2 rounded text-xs text-rose-600 mb-2 font-bold">sam build</code>
+                        <p class="text-[11px] text-gray-500">YAML 파일이나 소스 수정 시 필수 실행</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <span class="text-[10px] font-bold text-indigo-500 block mb-1">STEP 2. 로컬 검증</span>
+                        <code class="block bg-gray-100 p-2 rounded text-xs text-rose-600 mb-2 font-bold">sam local start-api</code>
+                        <p class="text-[11px] text-gray-500">localhost:3000 환경에서 API 테스트</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Workflow Command Guide -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 border-b-2 border-emerald-500 pb-2 mb-6">3. 표준 작업 흐름 (명령어 및 UI)</h2>
+                
+                <div class="bg-slate-800 text-gray-300 p-6 rounded-xl font-mono text-sm space-y-8 shadow-2xl border border-slate-700">
+                    
+                    <!-- 로컬 작업 -->
+                    <div>
+                        <p class="text-emerald-400 text-xs mb-2 font-bold tracking-widest uppercase">// 1. 로컬 작업 시작 (명령어)</p>
+                        <div class="space-y-1 ml-2 border-l-2 border-slate-600 pl-4">
+                            <p><span class="text-blue-400">git</span> checkout develop</p>
+                            <p><span class="text-blue-400">git</span> pull origin develop <span class="text-gray-500"># 최신 코드 가져오기</span></p>
+                            <p><span class="text-blue-400">git</span> checkout -b feature/<span class="text-yellow-300">task-name</span></p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-emerald-400 text-xs mb-2 font-bold tracking-widest uppercase">// 2. SAM 빌드 및 테스트</p>
+                        <div class="space-y-1 ml-2 border-l-2 border-slate-600 pl-4">
+                            <p><span class="text-blue-400">sam</span> build</p>
+                            <p><span class="text-blue-400">sam</span> local invoke <span class="text-gray-500"># 또는 start-api</span></p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-emerald-400 text-xs mb-2 font-bold tracking-widest uppercase">// 3. GitHub Push</p>
+                        <div class="space-y-1 ml-2 border-l-2 border-slate-600 pl-4">
+                            <p><span class="text-blue-400">git</span> add .</p>
+                            <p><span class="text-blue-400">git</span> commit -m <span class="text-rose-400">"feat: 기능 설명"</span></p>
+                            <p><span class="text-blue-400">git</span> push origin feature/<span class="text-yellow-300">task-name</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Merge Step 5 -->
+                    <div class="pt-6 border-t border-slate-700">
+                        <p class="text-emerald-400 text-xs mb-2 font-bold tracking-widest uppercase">// 4. feature &rarr; develop 병합 (GitHub UI에서 진행)</p>
+                        <p class="text-gray-400 text-xs mb-3 flex items-center italic"><i class="fas fa-lock text-rose-400 mr-1"></i> 보호 브랜치이므로 터미널 직접 머지가 막혀 있습니다. 반드시 PR 페이지에서 진행합니다.</p>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 ml-2">
+                            <li>GitHub 접속 후 초록색 <span class="text-green-400 font-bold">Compare & pull request</span> 버튼을 클릭하여 PR 생성</li>
+                            <li>Base: <code class="bg-slate-700 text-blue-300 px-1 rounded font-bold">develop</code> &larr; Compare: <code class="bg-slate-700 text-yellow-300 px-1 rounded font-bold">feature/*</code> 확인! <span class="text-xs text-rose-500">(main 선택 금지)</span></li>
+                            <li>리뷰어 1명 이상의 <strong>Approve</strong> 받기</li>
+                            <li>모든 리뷰 코멘트 해결 후 <span class="bg-green-600 text-white px-2 py-0.5 rounded text-xs font-bold">Squash and merge</span> 클릭</li>
+                        </ul>
+                    </div>
+
+                    <!-- Merge Step 6 -->
+                    <div class="pt-6 border-t border-slate-700">
+                        <p class="text-emerald-400 text-xs mb-2 font-bold tracking-widest uppercase">// 5. develop &rarr; main 운영 배포 병합 (GitHub UI에서 진행)</p>
+                        <p class="text-gray-400 text-xs mb-3 flex items-center italic"><i class="fas fa-rocket text-blue-400 mr-1"></i> 통합 테스트 완료 시, 실제 서비스(Production) 자동 배포를 위해 진행합니다.</p>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 ml-2">
+                            <li>GitHub <strong>[Pull requests]</strong> 탭 &rarr; <strong>New pull request</strong> 클릭</li>
+                            <li>Base: <code class="bg-slate-700 text-emerald-300 px-1 rounded font-bold">main</code> &larr; Compare: <code class="bg-slate-700 text-blue-300 px-1 rounded font-bold">develop</code> 으로 설정</li>
+                            <li>GitHub Actions(CI/CD) 상태 체크 통과 확인 <span class="text-xs text-gray-500">(에러가 없어야 머지 가능)</span></li>
+                            <li>안전하게 <span class="bg-green-600 text-white px-2 py-0.5 rounded text-xs font-bold">Squash and merge</span> 버튼을 눌러 실제 배포!</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Section 5: Security & Caution -->
+            <section class="bg-rose-50 border border-rose-200 p-6 rounded-xl">
+                <h2 class="text-lg font-bold text-rose-800 mb-2"><i class="fas fa-shield-alt mr-2"></i>보안 및 절대 금지 사항 (Don'ts)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <ul class="list-disc list-inside text-rose-700 space-y-1">
+                        <li>로컬 <strong>main / develop</strong> 직접 Push</li>
+                        <li>리뷰 승인 없이 <strong>강제 병합(Force Merge)</strong></li>
+                    </ul>
+                    <ul class="list-disc list-inside text-rose-700 space-y-1">
+                        <li><strong>AWS Access Key</strong>가 포함된 코드 커밋</li>
+                        <li>빌드/테스트 에러가 있는 상태로 PR 요청</li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-gray-100 p-6 text-center text-sm text-gray-500">
+            <p>규칙을 준수하여 충돌 없는 평화로운 협업을 만들어 갑시다! 🚀</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

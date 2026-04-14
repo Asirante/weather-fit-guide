@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CD 구축 액션 플랜 - inhatc-team2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        function copyCode(id) {
+            const text = document.getElementById(id).innerText;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            // alert 대신 하단 메시지 박스 권장이나, 기존 코드 유지
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed p-6">
+
+    <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200">
+        
+        <!-- Header -->
+        <header class="bg-indigo-600 text-white p-8">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h1 class="text-3xl font-extrabold mb-2"><i class="fas fa-rocket mr-3"></i>weather-fit CI/CD 구축 액션 플랜</h1>
+                    <p class="text-indigo-100 text-lg">inhatc-team2 모노레포 자동화 배포 파이프라인 완성하기</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="p-8 space-y-10">
+            
+            <!-- Step 1 & 2 (팀장) -->
+            <div class="flex gap-6">
+                <div class="w-12 h-12 shrink-0 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl font-bold">1</div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold mb-2">학교 관리자에게 권한 문서 전달 <span class="text-sm font-normal text-slate-500 ml-2">(담당: 팀장)</span></h2>
+                    <p class="text-slate-600 mb-2">이전에 작성된 'AWS 권한 및 OIDC 설정 요청서'를 학교 측(교수님/조교님)에 전달하고, 배포용 <strong>IAM Role ARN</strong> 발급을 기다립니다.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-6">
+                <div class="w-12 h-12 shrink-0 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl font-bold">2</div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold mb-2">GitHub Secrets에 Role ARN 등록 <span class="text-sm font-normal text-slate-500 ml-2">(담당: 팀장)</span></h2>
+                    <p class="text-slate-600 mb-3">학교로부터 <code>arn:aws:iam::...:role/...</code> 형태의 주소를 받으면 깃허브에 등록합니다.</p>
+                    <div class="bg-slate-100 p-4 rounded-lg text-sm text-slate-700 border border-slate-200">
+                        <ol class="list-decimal list-inside space-y-1">
+                            <li><code>Asirante/weather-fit</code> 레포지토리 접속</li>
+                            <li><strong>[Settings]</strong> ➔ <strong>[Secrets and variables]</strong> ➔ <strong>[Actions]</strong> 이동</li>
+                            <li><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-bold">New repository secret</span> 클릭</li>
+                            <li>Name: <code>AWS_ROLE_ARN</code> / Value: <strong>발급받은 ARN 주소</strong> 입력 후 저장</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-200">
+
+            <!-- Step 3 (공통) -->
+            <div class="flex gap-6">
+                <div class="w-12 h-12 shrink-0 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xl font-bold">3</div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold mb-2">각 파트별 YAML 파일에 OIDC 인증 추가 <span class="text-sm font-normal text-slate-500 ml-2">(담당: 최혁, 고원영, 김호건)</span></h2>
+                    <p class="text-slate-600 mb-3">각자 맡은 <code>.github/workflows/</code> 폴더 안의 <code>.yml</code> 파일에 아래 2가지 내용을 반드시 추가해야 합니다.</p>
+                    
+                    <div class="relative bg-slate-800 rounded-lg p-4 overflow-hidden mb-4">
+                        <button onclick="copyCode('code-oidc')" class="absolute top-3 right-3 bg-slate-600 hover:bg-slate-500 text-white text-xs px-3 py-1 rounded transition">복사</button>
+                        <pre id="code-oidc" class="text-sm text-slate-300 font-mono overflow-x-auto">
+<span class="text-green-400"># 1. jobs 하위에 권한(permissions) 블록 추가 (필수)</span>
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      
+      <span class="text-green-400"># ... (의존성 설치, 빌드 등 기존 코드) ...</span>
+
+      <span class="text-green-400"># 2. 실제 배포(AWS CLI) 스텝 직전에 OIDC 로그인 스텝 추가</span>
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-northeast-2 <span class="text-slate-500"># 사용하는 서울 리전</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 (개별) -->
+            <div class="flex gap-6">
+                <div class="w-12 h-12 shrink-0 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl font-bold">4</div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold mb-2">실제 배포 명령어(AWS CLI) 작성 <span class="text-sm font-normal text-slate-500 ml-2">(각 파트별)</span></h2>
+                    <p class="text-slate-600 mb-4">OIDC 로그인이 완료되었으므로, 기존의 <code>echo "Dummy Deploy..."</code> 부분을 지우고 진짜 배포 명령어를 작성합니다.</p>
+                    
+                    <!-- Front -->
+                    <div class="mb-6">
+                        <h3 class="font-bold text-indigo-600 mb-2"><i class="fas fa-desktop mr-2"></i>프론트엔드 (최혁 님)</h3>
+                        <p class="text-sm text-slate-600 mb-2">빌드된 Vue.js 파일(dist)을 S3에 동기화하고 CloudFront 캐시를 초기화합니다.</p>
+                        <div class="relative bg-slate-800 rounded-lg p-3">
+                            <button onclick="copyCode('code-front')" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs px-2 py-1 rounded">복사</button>
+                            <pre id="code-front" class="text-sm text-slate-300 font-mono">
+- name: Deploy to S3 and Invalidate CloudFront
+  run: |
+    aws s3 sync frontend/dist/ s3://[본인S3버킷이름] --delete
+    aws cloudfront create-invalidation --distribution-id [클라우드프론트ID] --paths "/*"</pre>
+                        </div>
+                    </div>
+
+                    <!-- Backend / Data -->
+                    <div>
+                        <h3 class="font-bold text-indigo-600 mb-2"><i class="fas fa-server mr-2"></i>백엔드 & 데이터 (고원영 님, 김호건 님)</h3>
+                        <p class="text-sm text-slate-600 mb-2">패키징된 <code>deploy.zip</code> 파일을 각각의 람다 함수에 업데이트합니다.</p>
+                        <div class="relative bg-slate-800 rounded-lg p-3">
+                            <button onclick="copyCode('code-back')" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs px-2 py-1 rounded">복사</button>
+                            <pre id="code-back" class="text-sm text-slate-300 font-mono">
+- name: Deploy to AWS Lambda
+  run: |
+    aws lambda update-function-code \
+      --function-name [본인람다함수이름] \
+      --zip-file fileb://deploy.zip</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-200">
+
+            <!-- Step 5 (PR 가이드라인 반영 업데이트) -->
+            <div class="flex gap-6">
+                <div class="w-12 h-12 shrink-0 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl font-bold">5</div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold mb-2">PR 생성 및 자동 배포 테스트 <span class="text-sm font-normal text-slate-500 ml-2">(공통)</span></h2>
+                    <p class="text-slate-600 mb-4">코드 작성이 완료되면 가이드라인에 따라 <code>develop</code> 브랜치로 PR을 올리고 배포를 확인합니다.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h4 class="font-bold text-sm text-slate-700 mb-2"><i class="fas fa-code-branch mr-2"></i>PR 및 병합 순서</h4>
+                            <ul class="text-xs text-slate-600 space-y-2">
+                                <li>1. <code class="bg-white px-1">feature/*</code> &rarr; <code class="bg-blue-50 text-blue-600 px-1">develop</code> PR 생성</li>
+                                <li>2. <strong>최소 1명</strong>의 팀원 승인(Approve) 대기</li>
+                                <li>3. 반드시 <strong>Squash and Merge</strong>로 병합</li>
+                                <li>4. 배포 완료 후 <code class="bg-blue-50 text-blue-600 px-1">develop</code> &rarr; <code class="bg-green-50 text-green-600 px-1">main</code> 최종 통합</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h4 class="font-bold text-sm text-slate-700 mb-2"><i class="fas fa-tasks mr-2"></i>Actions 체크리스트</h4>
+                            <ul class="text-xs text-slate-600 space-y-2">
+                                <li><i class="fas fa-check text-green-500 mr-1"></i> GitHub <strong>Actions</strong> 탭에서 작업 성공 확인</li>
+                                <li><i class="fas fa-check text-green-500 mr-1"></i> 자신의 파트(Front/Back) 액션만 돌았는지 확인</li>
+                                <li><i class="fas fa-times text-red-500 mr-1"></i> 실패 시 로그를 확인하고 <code class="bg-white px-1">main</code> 직접 Push 금지</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-lg">
+                        <p class="text-sm text-indigo-800">
+                            <i class="fas fa-info-circle mr-2"></i> <strong>기억하세요!</strong> <code>main</code> 브랜치는 보호되어 있습니다. 모든 변경사항은 PR을 거쳐야만 배포 파이프라인이 정상적으로 동작합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-gray-100 p-6 text-center text-sm text-gray-500">
+            <p>협업 가이드라인을 준수하여 안정적인 배포 환경을 유지합시다.</p>
+        </div>
+    
+    </div>
+
+</body>
+</html>
