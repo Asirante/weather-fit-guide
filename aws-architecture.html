@@ -81,8 +81,8 @@
                     <li class="flex items-start gap-3">
                         <div class="mt-1 w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
                         <div>
-                            <strong class="block text-slate-800">가이드라인 캐싱 (team2-ai-prompt-cache)</strong>
-                            <p class="text-slate-600 text-sm mt-1">기상패턴(PK)을 기준으로 캐싱용 <strong>team2-ai-prompt-cache</strong> (DynamoDB)를 운영합니다. (TTL 없음)</p>
+                            <strong class="block text-slate-800">가이드라인 캐싱 (team2-recommend-cache)</strong>
+                            <p class="text-slate-600 text-sm mt-1">기상패턴(PK)을 기준으로 캐싱용 <strong>team2-recommend-cache</strong> (DynamoDB)를 운영합니다. (TTL 없음)</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
@@ -91,7 +91,7 @@
                             <strong class="block text-slate-800">일일 배치 프로세스 (24시간 주기)</strong>
                             <ul class="list-disc list-inside text-slate-600 text-sm mt-1 space-y-1 ml-1">
                                 <li>수집된 모든 데이터의 중복을 제거하여 유니크한 기상패턴 추출</li>
-                                <li>기존 <strong>team2-ai-prompt-cache</strong>의 캐시 데이터 초기화</li>
+                                <li>기존 <strong>team2-recommend-cache</strong>의 캐시 데이터 초기화</li>
                                 <li>새로운 기상 패턴들을 <strong>Bedrock AI (프롬프트 캐싱 적용)</strong>에 일괄 전송</li>
                                 <li>생성된 AI 답변을 캐시 DB에 적재</li>
                             </ul>
@@ -165,7 +165,7 @@
                             <div class="text-xs text-indigo-100 font-normal mt-2 text-left bg-indigo-600 p-2 rounded leading-relaxed">
                                 1. <b>캐시 DB (날씨/대기)</b> 데이터 조회<br>
                                 2. 메모리에서 <b>기상패턴 동적 조립</b><br>
-                                3. <b>team2-ai-prompt-cache</b> 조회
+                                3. <b>team2-recommend-cache</b> 조회
                             </div>
                         </div>
                         <svg class="w-6 h-6 text-slate-400 rotate-90 lg:rotate-0 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -173,7 +173,7 @@
                         <!-- DBs and AI -->
                         <div class="flex flex-col gap-3 w-full lg:flex-1">
                             <div class="bg-white p-3 rounded-lg shadow-sm border-purple-200 border-2 text-center text-sm font-semibold text-slate-700 flex flex-col xl:flex-row justify-between items-center gap-2">
-                                <span class="text-xs">team2-ai-prompt-cache</span>
+                                <span class="text-xs">team2-recommend-cache</span>
                                 <span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded whitespace-nowrap">Hit 시 즉시 반환</span>
                             </div>
                             <div class="flex flex-col xl:flex-row items-center gap-2">
@@ -206,7 +206,7 @@
                     <svg class="w-6 h-6 text-slate-400 rotate-90 md:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     <div class="bg-white p-4 rounded-lg shadow-sm border-purple-200 border-2 text-center w-full md:w-56 text-sm font-semibold text-slate-700">
                         DynamoDB
-                        <div class="text-[10px] text-purple-600 bg-purple-50 rounded mt-1 p-0.5 border border-purple-100">team2-ai-prompt-cache</div>
+                        <div class="text-[10px] text-purple-600 bg-purple-50 rounded mt-1 p-0.5 border border-purple-100">team2-recommend-cache</div>
                     </div>
                 </div>
             </div>
@@ -231,7 +231,7 @@
                     <li class="flex items-start gap-3">
                         <div class="mt-1 w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
                         <div>
-                            <strong class="block text-slate-800">캐싱 DB (team2-ai-prompt-cache)</strong>
+                            <strong class="block text-slate-800">캐싱 DB (team2-recommend-cache)</strong>
                             <p class="text-slate-600 text-sm mt-1">기상패턴(PK)을 기준으로 AI가 생성한 가이드라인(옷, 마스크 등)과 한줄평을 저장합니다. (TTL 없음)</p>
                         </div>
                     </li>

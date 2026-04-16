@@ -15,6 +15,7 @@
         .tag-ai { background-color: #f3e8ff; color: #581c87; border: 1px solid #e9d5ff;}
         .tag-network { background-color: #ffedd5; color: #9a3412; border: 1px solid #fed7aa;}
         .tag-analytics { background-color: #e0f2fe; color: #075985; border: 1px solid #bae6fd;}
+        .status-done { background-color: #dcfce7; color: #166534; font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 9999px; font-weight: bold; margin-left: 0.25rem; vertical-align: middle; }
     </style>
 </head>
 <body class="text-gray-800 antialiased p-4 md:p-8">
@@ -25,24 +26,23 @@
         <header class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500"></div>
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight mt-2">🌤️ Team 2 AWS 실무 구축 가이드</h1>
-            <p class="text-lg text-gray-500 mb-6">각 팀원별 사용해야 할 AWS 서비스와 구체적인 To-Do 리스트</p>
-            
+            <p class="text-lg text-gray-500 mb-6">각 팀원별 사용해야 할 AWS 서비스와 구체적인 To-Do 리스트 및 리소스 현황</p>
         </header>
 
         <!-- Section: Resource Request Guide -->
         <section class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
             <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                 <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                📌 리소스 생성 가이드
+                📌 리소스 생성 현황 및 가이드
             </h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-gray-50 text-gray-600 text-sm uppercase tracking-wide">
                             <th class="p-3 border-b border-gray-200 rounded-tl-lg">리소스 종류</th>
-                            <th class="p-3 border-b border-gray-200">추천 리소스 이름</th>
+                            <th class="p-3 border-b border-gray-200">추천/생성된 리소스 이름</th>
                             <th class="p-3 border-b border-gray-200">용도</th>
-                            <th class="p-3 border-b border-gray-200 rounded-tr-lg">요청 담당자</th>
+                            <th class="p-3 border-b border-gray-200 rounded-tr-lg">담당자</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm text-gray-700">
@@ -61,25 +61,49 @@
 						<tr class="border-b border-gray-100 hover:bg-gray-50">
 							<td class="p-3 font-semibold text-green-700">S3 버킷</td>
 							<td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">inhatc-team2-3-parquet-data</code></td>
-							<td class="p-3">JSON 원본 데이터를 압축 및 쿼리 최적화된 Parquet 포맷으로 변환하여 저장하는 분석용 데이터 레이크</td>
+							<td class="p-3">분석용 데이터 레이크 (Parquet 포맷 저장)</td>
 							<td class="p-3 font-bold text-purple-800">박근령 (Data)</td>
 						</tr>
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-red-700">Lambda</td>
+                            <td class="p-3">
+                                <code class="bg-gray-100 text-red-600 px-2 py-1 rounded">inhatc-team2-5-dataAPI</code><br>
+                                <code class="bg-gray-100 text-red-600 px-2 py-1 rounded mt-1 inline-block">inhatc-team2-5-real-time-dataAPI</code>
+                            </td>
+                            <td class="p-3">raw 데이터 및 실시간 공공데이터 수집</td>
+                            <td class="p-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-indigo-700">EventBridge</td>
+                            <td class="p-3">
+                                <code class="bg-gray-100 text-indigo-600 px-2 py-1 rounded">inhatc-team2-data-trigger</code><br>
+                                <code class="bg-gray-100 text-indigo-600 px-2 py-1 rounded mt-1 inline-block">inhatc-team2-real-time-trigger</code>
+                            </td>
+                            <td class="p-3">각 람다 함수 rate 기반 호출 스케줄러</td>
+                            <td class="p-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
                             <td class="p-3 font-semibold text-blue-700">DynamoDB</td>
                             <td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">team2-weather-cache</code></td>
-                            <td class="p-3">현재 날씨 상태 저장 용도 (PK: 지역코드 등)</td>
+                            <td class="p-3">현재 날씨 상태 저장 용도</td>
                             <td class="p-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
                         </tr>
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
                             <td class="p-3 font-semibold text-blue-700">DynamoDB</td>
                             <td class="p-3"><code class="bg-gray-100 text-teal-600 px-2 py-1 rounded">team2-air-cache</code></td>
-                            <td class="p-3">현재 대기 상태 저장 용도 (PK: 지역코드 등)</td>
+                            <td class="p-3">현재 대기 상태 저장 용도</td>
                             <td class="p-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-red-700">Lambda</td>
+                            <td class="p-3"><code class="bg-gray-100 text-red-600 px-2 py-1 rounded">inhatc-team2-1-recommendAPI</code></td>
+                            <td class="p-3">날씨 기반 옷 추천 API</td>
+                            <td class="p-3 font-bold text-green-600">고원영 (Backend)</td>
                         </tr>
                         <tr class="hover:bg-gray-50">
                             <td class="p-3 font-semibold text-blue-700">DynamoDB</td>
-                            <td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">team2-ai-prompt-cache</code></td>
-                            <td class="p-3">AI 답변 캐싱용 (PK: 기상패턴, 예: Clear_25C)</td>
+                            <td class="p-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">team2-recommend-cache</code></td>
+                            <td class="p-3">옷 추천 결과 캐싱 용도</td>
                             <td class="p-3 font-bold text-green-600">고원영 (Backend)</td>
                         </tr>
                     </tbody>
@@ -116,19 +140,21 @@
                     <ul class="space-y-3 text-sm text-gray-700">
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>데이터 수집 로직 작성:</strong> 4개 기상청 API를 호출하여 날씨/대기질 데이터를 가져오는 Python 코문을 Lambda에 배포합니다.</span>
+                            <span><strong>데이터 수집 로직 (Lambda):</strong> <br>
+                            <code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-5-dataAPI</code> 및 <code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-5-real-time-dataAPI</code> <strong>생성 완료.</strong> 파이썬 코드를 작성하여 날씨/대기질 데이터를 수집합니다.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>스케줄러 연동:</strong> EventBridge를 사용해 매 시간(또는 특정 주기)마다 위 Lambda가 자동으로 실행되도록 규칙(Rule)을 설정합니다.</span>
+                            <span><strong>스케줄러 연동 (EventBridge):</strong> <br>
+                            <code class="text-xs bg-gray-100 text-indigo-600 px-1">inhatc-team2-data-trigger</code> 및 <code class="text-xs bg-gray-100 text-indigo-600 px-1">inhatc-team2-real-time-trigger</code> <strong>생성 완료.</strong> rate 기반으로 스케줄이 동작하도록 설정합니다.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>데이터 적재 (S3):</strong> API에서 받아온 원본 JSON 데이터를 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">raw-data</code>)에 누적 저장합니다. (추후 분석 엔지니어가 활용할 수 있도록)</span>
+                            <span><strong>데이터 적재 (S3):</strong> API에서 받아온 원본 JSON 데이터를 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">raw-data</code>)에 누적 저장합니다.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>상태 업데이트 (DynamoDB):</strong> 프론트가 즉시 읽어갈 수 있도록 가공된 현재 날씨(weather-cache) 및 대기 상태(air-cache) 데이터를 분리된 DynamoDB 테이블에 업데이트(PutItem) 합니다.</span>
+                            <span><strong>상태 업데이트 (DynamoDB):</strong> 가공된 현재 날씨(weather-cache) 및 대기 상태(air-cache) 데이터를 DynamoDB 테이블에 업데이트(PutItem) 합니다.</span>
                         </li>
                     </ul>
                 </div>
@@ -160,7 +186,8 @@
                     <ul class="space-y-3 text-sm text-gray-700">
                         <li class="flex items-start">
                             <span class="text-green-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>서버리스 API 구축:</strong> FastAPI 프레임워크와 Mangum 어댑터를 활용하여 Lambda 기반의 백엔드 코드를 작성 및 배포합니다.</span>
+                            <span><strong>서버리스 API 구축 (Lambda):</strong> <br>
+                            <code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-1-recommendAPI</code> <strong>생성 완료.</strong> 확정될 데이터를 기반으로 날씨 옷 추천 API 로직을 작성합니다.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-green-500 mr-2 mt-0.5">✅</span>
@@ -168,7 +195,8 @@
                         </li>
                         <li class="flex items-start">
                             <span class="text-green-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>캐싱 로직 구현 (핵심):</strong> 프론트의 요청이 오면 기상패턴(예: 맑음_25도)을 Key로 DynamoDB(<code class="text-xs text-pink-500 bg-gray-50 px-1">ai-prompt-cache</code>)를 조회합니다. 데이터가 있으면 즉시 반환(캐시 Hit)합니다.</span>
+                            <span><strong>캐싱 로직 구현 (DynamoDB):</strong> <br>
+                            <code class="text-xs bg-gray-100 text-pink-600 px-1">team2-recommend-cache</code> <strong>생성 완료.</strong> 프론트의 요청이 오면 기상패턴을 Key로 이 테이블을 조회하여 캐시 히트 시 즉시 반환합니다.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-green-500 mr-2 mt-0.5">✅</span>
