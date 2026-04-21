@@ -8,63 +8,121 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <style>body { font-family: 'Pretendard', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col items-center justify-center p-6">
+<body class="bg-slate-50 text-slate-900 min-h-screen py-12 px-6">
 
-    <header class="text-center mb-12">
-        <h1 class="text-4xl font-extrabold text-indigo-600 mb-4">🌤️ Weather-Fit Project</h1>
-        <p class="text-xl text-slate-500">인하공전 Team 2 기술 문서 저장소</p>
-    </header>
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-indigo-600 mb-4 tracking-tight">🌤️ Weather-Fit Project</h1>
+            <p class="text-lg md:text-xl text-slate-500">인하공전 Team 2 기술 문서 및 가이드라인 포털</p>
+        </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
-        
-        <a href="pr-guide.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-emerald-500 transition-all hover:shadow-md">
-            <div class="text-3xl mb-4">🤝</div>
-            <h2 class="text-xl font-bold group-hover:text-emerald-600">GitHub 협업 가이드</h2>
-            <p class="text-slate-500 mt-2 text-sm">브랜치 전략, PR 템플릿 및 코드 리뷰 규칙 </p>
-        </a>
+        <!-- Section 1: 팀원별 MVP 액션 플랜 -->
+        <section class="mb-16">
+            <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">🎯</span>
+                    팀원별 MVP Action Plan (Phase 1)
+                </h2>
+                <span class="hidden md:inline-block text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">최우선 진행 태스크</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Front -->
+                <a href="mvps/fe-mvp-guide.html" class="group bg-white p-6 rounded-2xl shadow-sm border-2 border-transparent hover:border-orange-400 transition-all hover:shadow-md relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-orange-50 rounded-bl-full -z-0"></div>
+                    <div class="text-3xl mb-3 relative z-10">🖥️</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-orange-600 mb-1 relative z-10">프론트엔드 (최혁)</h3>
+                    <p class="text-slate-500 text-sm relative z-10">실시간 데이터 연동 및 배포</p>
+                </a>
+                
+                <!-- Back -->
+                <a href="mvps/be-mvp-guide.html" class="group bg-white p-6 rounded-2xl shadow-sm border-2 border-transparent hover:border-green-400 transition-all hover:shadow-md relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-green-50 rounded-bl-full -z-0"></div>
+                    <div class="text-3xl mb-3 relative z-10">⚙️</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-green-600 mb-1 relative z-10">백엔드 (고원영)</h3>
+                    <p class="text-slate-500 text-sm relative z-10">조회 API 및 룰베이스 로직 구현</p>
+                </a>
+                
+                <!-- Data Engineer -->
+                <a href="mvps/de-mvp-guide.html" class="group bg-white p-6 rounded-2xl shadow-sm border-2 border-transparent hover:border-blue-400 transition-all hover:shadow-md relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -z-0"></div>
+                    <div class="text-3xl mb-3 relative z-10">🗄️</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 mb-1 relative z-10">데이터 엔지니어 (김호건)</h3>
+                    <p class="text-slate-500 text-sm relative z-10">파이프라인 유지 및 모니터링</p>
+                </a>
+                
+                <!-- Data Analyst -->
+                <a href="mvps/da-mvp-guide.html" class="group bg-white p-6 rounded-2xl shadow-sm border-2 border-transparent hover:border-purple-400 transition-all hover:shadow-md relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-purple-50 rounded-bl-full -z-0"></div>
+                    <div class="text-3xl mb-3 relative z-10">📊</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-purple-600 mb-1 relative z-10">데이터 분석 (박근령)</h3>
+                    <p class="text-slate-500 text-sm relative z-10">AI 프롬프트 및 패턴 설계</p>
+                </a>
+            </div>
+        </section>
 
-        <a href="aws-practice.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-500 transition-all hover:shadow-md">
-            <div class="text-3xl mb-4">🏗️</div>
-            <h2 class="text-xl font-bold group-hover:text-blue-600">AWS 실무 구축 가이드</h2>
-            <p class="text-slate-500 mt-2 text-sm">팀원별 AWS 서비스 할당 및 To-Do 리스트 </p>
-        </a>
+        <!-- Section 2: 프로젝트 공통 가이드 문서 -->
+        <section>
+            <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="bg-slate-200 text-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">📚</span>
+                    프로젝트 공통 가이드 & 아키텍처
+                </h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <a href="api-specs.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-rose-500 transition-all hover:shadow-md md:col-span-2 lg:col-span-3 lg:w-2/3 mx-auto flex flex-col sm:flex-row items-center sm:text-left text-center gap-6">
+                    <div class="text-4xl">📋</div>
+                    <div>
+                        <h3 class="text-xl font-bold group-hover:text-rose-600">API 데이터 규약 (명세서)</h3>
+                        <p class="text-slate-500 mt-1 text-sm">기상청 및 에어코리아 실시간 데이터 수집 규격 및 컬럼 안내 (전체 도메인)</p>
+                    </div>
+                </a>
 
-        <a href="oidc-setup.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-indigo-500 transition-all hover:shadow-md">
-            <div class="text-3xl mb-4">🚀</div>
-            <h2 class="text-xl font-bold group-hover:text-indigo-600">배포 액션 플랜</h2>
-            <p class="text-slate-500 mt-2 text-sm">GitHub Actions OIDC 인증 및 자동 배포 설정 </p>
-        </a>
+                <a href="pr-guide.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-emerald-500 transition-all hover:shadow-md">
+                    <div class="text-3xl mb-4">🤝</div>
+                    <h3 class="text-xl font-bold group-hover:text-emerald-600">GitHub 협업 가이드</h3>
+                    <p class="text-slate-500 mt-2 text-sm">브랜치 전략, PR 템플릿 및 코드 리뷰 규칙</p>
+                </a>
 
-        <a href="initial-setup.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-amber-500 transition-all hover:shadow-md">
-            <div class="text-3xl mb-4">⚙️</div>
-            <h2 class="text-xl font-bold group-hover:text-amber-600">초기 세팅 가이드</h2>
-            <p class="text-slate-500 mt-2 text-sm">계정 보안, 예산 알람 및 모노레포 구조 정의 </p>
-        </a>
-		
-        <a href="aws-architecture.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-amber-500 transition-all hover:shadow-md">
-            <div class="text-3xl mb-4">🧩</div>
-            <h2 class="text-xl font-bold group-hover:text-amber-600">AWS 아키텍처</h2>
-            <p class="text-slate-500 mt-2 text-sm">AWS 서버리스 아키텍처 설계 요약 </p>
-        </a>
-		
-        <a href="aws-advancement.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-amber-500 transition-all hover:shadow-md">
-            <div class="text-3xl mb-4">📈</div>
-            <h2 class="text-xl font-bold group-hover:text-amber-600">분석 고도화</h2>
-            <p class="text-slate-500 mt-2 text-sm">데이터 파이프라인 최적화 및 분석 구축 </p>
-        </a>
+                <a href="aws-practice.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-500 transition-all hover:shadow-md">
+                    <div class="text-3xl mb-4">🏗️</div>
+                    <h3 class="text-xl font-bold group-hover:text-blue-600">AWS 실무 구축 가이드</h3>
+                    <p class="text-slate-500 mt-2 text-sm">팀원별 AWS 서비스 할당 및 To-Do 리스트</p>
+                </a>
 
-        <!-- 새롭게 추가된 API 규약 메뉴 -->
-        <a href="api-specs.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-rose-500 transition-all hover:shadow-md md:col-span-2">
-            <div class="text-3xl mb-4 text-center">📊</div>
-            <h2 class="text-xl font-bold group-hover:text-rose-600 text-center">API 데이터 규약</h2>
-            <p class="text-slate-500 mt-2 text-sm text-center">기상청 및 에어코리아 실시간 데이터 수집 규격 안내</p>
-        </a>
+                <a href="oidc-setup.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-indigo-500 transition-all hover:shadow-md">
+                    <div class="text-3xl mb-4">🚀</div>
+                    <h3 class="text-xl font-bold group-hover:text-indigo-600">배포 액션 플랜</h3>
+                    <p class="text-slate-500 mt-2 text-sm">GitHub Actions OIDC 인증 및 자동 배포 설정</p>
+                </a>
 
+                <a href="initial-setup.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-amber-500 transition-all hover:shadow-md">
+                    <div class="text-3xl mb-4">⚙️</div>
+                    <h3 class="text-xl font-bold group-hover:text-amber-600">초기 세팅 가이드</h3>
+                    <p class="text-slate-500 mt-2 text-sm">계정 보안, 예산 알람 및 모노레포 구조 정의</p>
+                </a>
+                
+                <a href="aws-architecture.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-amber-500 transition-all hover:shadow-md">
+                    <div class="text-3xl mb-4">🧩</div>
+                    <h3 class="text-xl font-bold group-hover:text-amber-600">AWS 아키텍처</h3>
+                    <p class="text-slate-500 mt-2 text-sm">AWS 서버리스 아키텍처 데이터 흐름도 및 설계 요약</p>
+                </a>
+                
+                <a href="aws-advancement.html" class="group bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-amber-500 transition-all hover:shadow-md">
+                    <div class="text-3xl mb-4">📈</div>
+                    <h3 class="text-xl font-bold group-hover:text-amber-600">분석 고도화 (Phase 2)</h3>
+                    <p class="text-slate-500 mt-2 text-sm">데이터 파이프라인 최적화 및 Athena 분석 구축</p>
+                </a>
+
+            </div>
+        </section>
+
+        <footer class="mt-20 text-center text-slate-400 text-sm">
+            © 2026 Inhatc Team 2. All rights reserved.
+        </footer>
     </div>
-
-    <footer class="mt-16 text-slate-400 text-sm">
-        © 2026 Inhatc Team 2. All rights reserved.
-    </footer>
 
 </body>
 </html>

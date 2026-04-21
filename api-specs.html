@@ -12,164 +12,189 @@
 </head>
 <body class="text-slate-800 antialiased p-4 md:p-8">
 
-    <div class="max-w-5xl mx-auto space-y-8">
+    <div class="max-w-6xl mx-auto space-y-10">
         
         <!-- Header -->
         <header class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
-            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">📊 API 데이터 수집 규약</h1>
-            <p class="text-lg text-slate-500">데이터 엔지니어 수집 기준 실시간 기상청 및 에어코리아 데이터 정보입니다.</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">📊 API 데이터 수집 규약 (v1.0)</h1>
+            <p class="text-lg text-slate-500">클라우드 2팀 환경 데이터 수집 및 제공 시스템 전체 데이터 명세서입니다.</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- 1. 전체 데이터 도메인 개요 -->
+        <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-800 p-5 flex items-center">
+                <h2 class="text-xl font-bold text-white">1. 전체 데이터 도메인 개요 (S3 저장데이터)</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm whitespace-nowrap">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold uppercase">도메인</th>
+                            <th class="px-6 py-4 font-semibold uppercase">API 명</th>
+                            <th class="px-6 py-4 font-semibold uppercase">설명</th>
+                            <th class="px-6 py-4 font-semibold uppercase text-center">데이터 성격</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-indigo-600">weather</td><td class="px-6 py-3">uv_index</td><td class="px-6 py-3">자외선 지수</td><td class="px-6 py-3 text-center"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">예측</span></td></tr>
+                        <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-indigo-600">weather</td><td class="px-6 py-3">air_diffusion</td><td class="px-6 py-3">대기 확산지수</td><td class="px-6 py-3 text-center"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">예측</span></td></tr>
+                        <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-teal-600">air_stats</td><td class="px-6 py-3">ctprvn_avg</td><td class="px-6 py-3">시도별 평균 대기오염</td><td class="px-6 py-3 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">통계</span></td></tr>
+                        <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-teal-600">air_stats</td><td class="px-6 py-3">sigungu_avg</td><td class="px-6 py-3">시군구별 평균 대기오염</td><td class="px-6 py-3 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">통계</span></td></tr>
+                        <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-purple-600">forecast</td><td class="px-6 py-3">ultra_short_forecast</td><td class="px-6 py-3">초단기 예보 (1~6시간)</td><td class="px-6 py-3 text-center"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">예측</span></td></tr>
+                        <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-purple-600">forecast</td><td class="px-6 py-3">short_forecast</td><td class="px-6 py-3">단기 예보 (3일)</td><td class="px-6 py-3 text-center"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">예측</span></td></tr>
+                        <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-emerald-600">air_info</td><td class="px-6 py-3">weekly_air_forecast</td><td class="px-6 py-3">주간 미세먼지 예보</td><td class="px-6 py-3 text-center"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">예측</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 2. Weather 도메인 -->
+        <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-indigo-50 border-b border-slate-200 p-5">
+                <h2 class="text-xl font-bold text-indigo-800">2. weather 도메인</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                
+                <!-- uv_index -->
+                <div class="p-0">
+                    <h3 class="font-bold text-slate-700 bg-slate-50 px-6 py-3 border-b border-slate-200">2.1 자외선 지수 (uv_index)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="text-slate-500 bg-slate-50/50"><tr><th class="px-6 py-2">컬럼명</th><th class="px-6 py-2">설명</th><th class="px-6 py-2">예시</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-6 py-2 font-mono">areaNo</td><td class="px-6 py-2">행정구역코드</td><td class="px-6 py-2">2826051500</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">areaNm</td><td class="px-6 py-2">지역명</td><td class="px-6 py-2">인천광역시 중구 신포동</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">code</td><td class="px-6 py-2">분류코드</td><td class="px-6 py-2">A07_2</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">date</td><td class="px-6 py-2">기준 시간</td><td class="px-6 py-2">2026041112</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">h0 ~ h75</td><td class="px-6 py-2">시간별 자외선 지수</td><td class="px-6 py-2">0~11</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- air_diffusion -->
+                <div class="p-0">
+                    <h3 class="font-bold text-slate-700 bg-slate-50 px-6 py-3 border-b border-slate-200">2.2 대기 확산지수 (air_diffusion)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="text-slate-500 bg-slate-50/50"><tr><th class="px-6 py-2">컬럼명</th><th class="px-6 py-2">설명</th><th class="px-6 py-2">예시</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-6 py-2 font-mono">areaNo</td><td class="px-6 py-2">행정구역코드</td><td class="px-6 py-2">2826051500</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">areaNm</td><td class="px-6 py-2">지역명</td><td class="px-6 py-2">인천광역시 중구 신포동</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">code</td><td class="px-6 py-2">분류코드</td><td class="px-6 py-2">A09</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">date</td><td class="px-6 py-2">기준 시간</td><td class="px-6 py-2">2026041112</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">h0 ~ h78</td><td class="px-6 py-2">시간별 확산지수</td><td class="px-6 py-2">0~100 (낮음:100, 매우높음:25)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Air Stats 도메인 -->
+        <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-teal-50 border-b border-slate-200 p-5">
+                <h2 class="text-xl font-bold text-teal-800">3. air_stats 도메인 (에어코리아 통계)</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                
+                <!-- ctprvn_avg -->
+                <div class="p-0">
+                    <h3 class="font-bold text-slate-700 bg-slate-50 px-6 py-3 border-b border-slate-200">3.1 시도별 실시간 평균 (ctprvn_avg)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="text-slate-500 bg-slate-50/50"><tr><th class="px-6 py-2">컬럼명</th><th class="px-6 py-2">설명</th><th class="px-6 py-2">예시</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-6 py-2 font-mono">itemCode</td><td class="px-6 py-2">오염물질 코드 (SO2, CO, O3, NO2, PM10, PM2.5)</td><td class="px-6 py-2">O3</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">dataTime</td><td class="px-6 py-2">측정 날짜</td><td class="px-6 py-2">2026-04-11</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">seoul</td><td class="px-6 py-2">서울지역 평균</td><td class="px-6 py-2">0.035</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">sejong</td><td class="px-6 py-2">세종지역 평균</td><td class="px-6 py-2">0.048</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- sigungu_avg -->
+                <div class="p-0">
+                    <h3 class="font-bold text-slate-700 bg-slate-50 px-6 py-3 border-b border-slate-200">3.2 시군구 평균 (sigungu_avg) & 현재 대기 상태</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="text-slate-500 bg-slate-50/50"><tr><th class="px-6 py-2">컬럼명</th><th class="px-6 py-2">설명</th><th class="px-6 py-2">예시</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-6 py-2 font-mono">dataTime</td><td class="px-6 py-2">측정 시간</td><td class="px-6 py-2">2026-04-11 13:00</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">sidoName</td><td class="px-6 py-2">시도명</td><td class="px-6 py-2">인천</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">pm10Value / pm10Grade</td><td class="px-6 py-2">미세먼지 농도 / 지수</td><td class="px-6 py-2">40 / 보통</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">pm25Value / pm25Grade</td><td class="px-6 py-2">초미세먼지 농도 / 지수</td><td class="px-6 py-2">29 / 보통</td></tr>
+                                <tr><td class="px-6 py-2 font-mono">o3Value / o3Grade</td><td class="px-6 py-2">오존 농도 / 지수</td><td class="px-6 py-2">0.061 / 보통</td></tr>
+                                <tr><td class="px-6 py-2 text-xs text-slate-400" colspan="3">* SO2, CO, NO2, khai(통합대기환경) 수치 및 Grade 포함</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Forecast 도메인 -->
+        <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-purple-50 border-b border-slate-200 p-5 flex items-center gap-2">
+                <h2 class="text-xl font-bold text-purple-800">4. forecast 도메인 (기상청 동네예보)</h2>
+            </div>
             
-            <!-- 기상청 -->
-            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-blue-50 border-b border-slate-200 p-6 flex items-center gap-3">
-                    <div class="bg-blue-500 text-white p-2 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-                    </div>
-                    <h2 class="text-xl font-bold text-slate-800">기상청 (초단기실황)</h2>
-                </div>
-                <div class="p-0 overflow-x-auto">
+            <div class="p-0">
+                <h3 class="font-bold text-slate-700 bg-slate-50 px-6 py-3 border-b border-slate-200">4.1 초단기 예보 / 4.2 단기 예보 (ultra_short / short) 통합 구조</h3>
+                <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                        <thead class="bg-slate-50/50 text-slate-500 border-b border-slate-200">
                             <tr>
-                                <th class="px-6 py-4 font-semibold uppercase">Key</th>
-                                <th class="px-6 py-4 font-semibold uppercase">설명</th>
-                                <th class="px-6 py-4 font-semibold uppercase">단위</th>
+                                <th class="px-6 py-3 font-semibold uppercase">Category (코드)</th>
+                                <th class="px-6 py-3 font-semibold uppercase">항목명</th>
+                                <th class="px-6 py-3 font-semibold uppercase">단위 및 범주</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-mono font-bold text-blue-600">T1H</td>
-                                <td class="px-6 py-4 text-slate-700">기온</td>
-                                <td class="px-6 py-4 text-slate-500">℃</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-mono font-bold text-blue-600">RN1</td>
-                                <td class="px-6 py-4 text-slate-700">1시간 강수량</td>
-                                <td class="px-6 py-4 text-slate-500">mm</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-mono font-bold text-blue-600">UUU</td>
-                                <td class="px-6 py-4 text-slate-700">동서바람성분</td>
-                                <td class="px-6 py-4 text-slate-500">m/s</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-mono font-bold text-blue-600">VVV</td>
-                                <td class="px-6 py-4 text-slate-700">남북바람성분</td>
-                                <td class="px-6 py-4 text-slate-500">m/s</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-mono font-bold text-blue-600">REH</td>
-                                <td class="px-6 py-4 text-slate-700">습도</td>
-                                <td class="px-6 py-4 text-slate-500">%</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-mono font-bold text-blue-600">PTY</td>
-                                <td class="px-6 py-4 text-slate-700">강수형태</td>
-                                <td class="px-6 py-4 text-slate-400 italic">-</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-mono font-bold text-blue-600">VEC</td>
-                                <td class="px-6 py-4 text-slate-700">풍향</td>
-                                <td class="px-6 py-4 text-slate-500">deg</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-mono font-bold text-blue-600">WSD</td>
-                                <td class="px-6 py-4 text-slate-700">풍속</td>
-                                <td class="px-6 py-4 text-slate-500">m/s</td>
-                            </tr>
+                            <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-purple-600">T1H / TMP</td><td class="px-6 py-3 text-slate-700">기온 / 1시간 기온</td><td class="px-6 py-3 text-slate-500">℃</td></tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/30"><td class="px-6 py-3 font-mono font-bold text-purple-600">TMN / TMX</td><td class="px-6 py-3 text-slate-700">일 최저기온 / 최고기온 (단기)</td><td class="px-6 py-3 text-slate-500">℃</td></tr>
+                            <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-purple-600">RN1 / PCP</td><td class="px-6 py-3 text-slate-700">1시간 강수량</td><td class="px-6 py-3 text-slate-500">범주(1mm) <span class="text-xs text-slate-400">1:약한비, 2:보통비, 3:강한비</span></td></tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/30"><td class="px-6 py-3 font-mono font-bold text-purple-600">PTY</td><td class="px-6 py-3 text-slate-700">강수형태</td><td class="px-6 py-3 text-slate-500">코드값</td></tr>
+                            <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-purple-600">POP</td><td class="px-6 py-3 text-slate-700">강수확률 (단기)</td><td class="px-6 py-3 text-slate-500">%</td></tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/30"><td class="px-6 py-3 font-mono font-bold text-purple-600">REH</td><td class="px-6 py-3 text-slate-700">습도</td><td class="px-6 py-3 text-slate-500">%</td></tr>
+                            <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-purple-600">SKY</td><td class="px-6 py-3 text-slate-700">하늘상태</td><td class="px-6 py-3 text-slate-500">코드값</td></tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/30"><td class="px-6 py-3 font-mono font-bold text-purple-600">WSD</td><td class="px-6 py-3 text-slate-700">풍속</td><td class="px-6 py-3 text-slate-500">m/s <span class="text-xs text-slate-400">1:약한, 2:약간강한, 3:강한</span></td></tr>
+                            <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-purple-600">SNO</td><td class="px-6 py-3 text-slate-700">1시간 신적설 (단기)</td><td class="px-6 py-3 text-slate-500">범주(1cm)</td></tr>
                         </tbody>
                     </table>
                 </div>
-            </section>
-
-            <!-- 에어코리아 -->
-            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-teal-50 border-b border-slate-200 p-6 flex items-center gap-3">
-                    <div class="bg-teal-500 text-white p-2 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 15.536c-1.171 1.952-3.07 1.952-4.242 0-1.172-1.953-1.172-5.119 0-7.072 1.171-1.952 3.07-1.952 4.242 0M8 10.5h4m-4 3h4m9-1.5a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <h2 class="text-xl font-bold text-slate-800">에어코리아 (대기질)</h2>
+                <div class="px-6 py-3 bg-white text-xs text-slate-500">
+                    * 공통 컬럼: region_code, region_name, baseDate, baseTime, fcstDate, fcstTime, fcstValue, nx, ny<br>
+                    * +900 이상, -900 이하 값은 관측장비 결측을 의미 (Missing 값 처리)
                 </div>
-                <div class="p-0 overflow-x-auto">
+            </div>
+        </section>
+
+        <!-- 5. Air Info 도메인 -->
+        <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-emerald-50 border-b border-slate-200 p-5">
+                <h2 class="text-xl font-bold text-emerald-800">5. air_info 도메인</h2>
+            </div>
+            <div class="p-0">
+                <h3 class="font-bold text-slate-700 bg-slate-50 px-6 py-3 border-b border-slate-200">5.1 초미세먼지 주간 예보 (weekly_air_forecast)</h3>
+                <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
-                            <tr>
-                                <th class="px-6 py-4 font-semibold uppercase">Key</th>
-                                <th class="px-6 py-4 font-semibold uppercase">설명</th>
-                            </tr>
-                        </thead>
+                        <thead class="text-slate-500 bg-slate-50/50"><tr><th class="px-6 py-2">컬럼명</th><th class="px-6 py-2">설명</th><th class="px-6 py-2 w-1/2">예시 (텍스트 형식)</th></tr></thead>
                         <tbody class="divide-y divide-slate-100">
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-3 font-mono font-bold text-teal-600">coValue</td>
-                                <td class="px-6 py-3 text-slate-700">일산화탄소 농도</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 bg-slate-50/50">
-                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">coGrade</td>
-                                <td class="px-6 py-3 text-slate-600">일산화탄소 지수</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-3 font-mono font-bold text-teal-600">khaiValue</td>
-                                <td class="px-6 py-3 text-slate-700">통합대기환경수치</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 bg-slate-50/50">
-                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">khaiGrade</td>
-                                <td class="px-6 py-3 text-slate-600">통합대기환경지수</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-3 font-mono font-bold text-teal-600">no2Value</td>
-                                <td class="px-6 py-3 text-slate-700">이산화질소 농도</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 bg-slate-50/50">
-                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">no2Grade</td>
-                                <td class="px-6 py-3 text-slate-600">이산화질소 지수</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-3 font-mono font-bold text-teal-600">o3Value</td>
-                                <td class="px-6 py-3 text-slate-700">오존 농도</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 bg-slate-50/50">
-                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">o3Grade</td>
-                                <td class="px-6 py-3 text-slate-600">오존 지수</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-3 font-mono font-bold text-teal-600">so2Value</td>
-                                <td class="px-6 py-3 text-slate-700">아황산가스 농도</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 bg-slate-50/50">
-                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">so2Grade</td>
-                                <td class="px-6 py-3 text-slate-600">아황산가스 지수</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-3 font-mono font-bold text-teal-600">pm10Value</td>
-                                <td class="px-6 py-3 text-slate-700">미세먼지(PM10) 농도</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 bg-slate-50/50">
-                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">pm10Grade</td>
-                                <td class="px-6 py-3 text-slate-600">미세먼지(PM10) 24시간 등급</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-3 font-mono font-bold text-teal-600">pm25Value</td>
-                                <td class="px-6 py-3 text-slate-700">미세먼지(PM2.5) 농도</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 bg-slate-50/50">
-                                <td class="px-6 py-3 font-mono font-bold text-slate-500 pl-8">pm25Grade</td>
-                                <td class="px-6 py-3 text-slate-600">미세먼지(PM2.5) 24시간 등급</td>
-                            </tr>
+                            <tr><td class="px-6 py-3 font-mono">frcstOneDt ~ frcstSevenDt</td><td class="px-6 py-3">1일차 ~ 7일차 날짜</td><td class="px-6 py-3">2026-04-11</td></tr>
+                            <tr><td class="px-6 py-3 font-mono">frcstOneCn ~ frcstSevenCn</td><td class="px-6 py-3">1일차 ~ 7일차 예보 내용</td><td class="px-6 py-3 whitespace-normal text-xs text-slate-600 bg-slate-50 p-2 rounded">서울: 낮음, 인천: 낮음, 경기북부: 낮음, 경기남부: 낮음, 강원영서: 낮음... 신뢰도: 높음</td></tr>
+                            <tr><td class="px-6 py-3 font-mono">PresnatnDt</td><td class="px-6 py-3">발표 시각</td><td class="px-6 py-3">2026-04-09</td></tr>
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
+        </section>
 
-        </div>
-        
-        <div class="text-center mt-8">
+        <div class="text-center mt-8 pb-8">
             <a href="index.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                문서 포털로 돌아가기
+                <i class="fas fa-arrow-left mr-2"></i> 문서 포털로 돌아가기
             </a>
         </div>
     </div>
