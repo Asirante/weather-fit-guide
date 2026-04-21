@@ -65,12 +65,12 @@
                                         <td class="py-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">inhatc-team2-4-frontend</code></td>
+                                        <td class="py-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">inhatc-team2-3-frontend</code></td>
                                         <td class="py-3">프론트엔드 정적 웹 배포 호스팅용</td>
                                         <td class="py-3 font-bold text-orange-600">최혁 (Front)</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">inhatc-team2-3-parquet-data</code></td>
+                                        <td class="py-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">inhatc-team2-4-parquet-data</code></td>
                                         <td class="py-3">분석용 데이터 레이크 (Parquet)</td>
                                         <td class="py-3 font-bold text-purple-800">박근령 (Data)</td>
                                     </tr>
@@ -245,11 +245,11 @@
                         </li>
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>데이터 적재 (S3):</strong> API에서 받아온 원본 JSON 데이터를 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">raw-data</code>)에 누적 저장합니다.</span>
+                            <span><strong>데이터 적재 (S3):</strong> API에서 받아온 원본 JSON 데이터를 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">inhatc-team2-5-raw-data</code>)에 누적 저장합니다.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>상태 업데이트 (DynamoDB):</strong> 가공된 현재 날씨(weather-cache) 및 대기 상태(air-cache) 데이터를 DynamoDB 테이블에 업데이트(PutItem) 합니다.</span>
+                            <span><strong>상태 업데이트 (DynamoDB):</strong> 가공된 현재 날씨(team2-weather-cache) 및 대기 상태(team2-air-cache) 데이터를 DynamoDB 테이블에 업데이트(PutItem) 합니다.</span>
                         </li>
                     </ul>
                 </div>
@@ -373,7 +373,7 @@
                     <ul class="space-y-3 text-sm text-gray-700">
                         <li class="flex items-start">
                             <span class="text-orange-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>정적 웹 배포:</strong> React 등으로 개발한 프론트엔드 빌드 파일을 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">frontend</code>)에 업로드하여 호스팅의 뼈대를 잡습니다.</span>
+                            <span><strong>정적 웹 배포:</strong> React 등으로 개발한 프론트엔드 빌드 파일을 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">inhatc-team2-3-frontend</code>)에 업로드하여 호스팅의 뼈대를 잡습니다.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-orange-500 mr-2 mt-0.5">✅</span>
