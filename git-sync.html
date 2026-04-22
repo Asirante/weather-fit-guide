@@ -9,6 +9,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .code-pill { background-color: #f1f5f9; color: #475569; padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-family: monospace; font-size: 0.85em; border: 1px solid #e2e8f0; }
+        .val-pill { background-color: #f8fafc; color: #0ea5e9; padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-family: monospace; font-size: 0.85em; font-weight: bold; border: 1px solid #bae6fd; }
     </style>
 </head>
 <body class="text-slate-800 antialiased p-4 md:p-8">
@@ -19,7 +21,7 @@
         <header class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
             <div class="flex items-center justify-center gap-3 mb-3">
-                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">최종 확정 배포 프로세스 (V4)</span>
+                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">최종 확정 배포 프로세스 (V5 - 상세 가이드)</span>
             </div>
             <h1 class="text-3xl font-extrabold text-slate-900 mb-4 tracking-tight">🚨 하이브리드 배포 가이드</h1>
             <p class="text-slate-500 leading-relaxed">
@@ -52,71 +54,126 @@
             </div>
         </div>
 
-        <!-- Case 2: Infra Update -->
+        <!-- Case 2: Infra Update (Detailed) -->
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-rose-50 border-b border-rose-100 p-6 flex items-center gap-3">
                 <div class="bg-rose-500 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"><i class="fas fa-server"></i></div>
                 <div>
-                    <h2 class="text-xl font-bold text-slate-800">상황 B. 인프라 설정(환경변수, 트리거 시간 등)을 수정해야 할 때</h2>
-                    <p class="text-xs text-rose-600 mt-1">예: 새로운 API 키 추가, 수집 스케줄 변경, 람다 메모리 증설</p>
+                    <h2 class="text-xl font-bold text-slate-800">상황 B. 람다 설정(환경변수, 트리거)을 갱신/생성해야 할 때</h2>
+                    <p class="text-xs text-rose-600 mt-1">최초 생성 시 또는 새로운 API 키 추가, 메모리 증설 시</p>
                 </div>
             </div>
-            <div class="p-6 md:p-8 space-y-4">
+            <div class="p-6 md:p-8 space-y-6">
+                
                 <div class="bg-rose-100 text-rose-800 p-4 rounded-xl text-sm font-bold flex gap-3 items-start">
                     <i class="fas fa-exclamation-triangle text-xl mt-0.5"></i>
                     <p>
-                        학교 계정 정책상 <span class="underline">람다 제어(CloudFormation) 권한이 명시적 거부(Deny)로 차단</span>되어 있습니다.<br>
-                        팀원들은 CloudShell에서 <code class="bg-rose-200 px-1 rounded">sam deploy</code> 명령어를 <strong>절대 사용하지 마세요.</strong> 에러가 발생합니다.
+                        학교 계정 정책상 <span class="underline">람다 제어 권한이 차단</span>되어 터미널 배포가 불가능합니다.<br>
+                        아래 가이드에 따라 <strong>AWS 웹 콘솔(화면)에 접속하여 직접(수동으로) 값을 입력</strong>해 주세요!
                     </p>
                 </div>
 
-                <div class="overflow-x-auto border border-slate-200 rounded-xl mt-4">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-600">
-                            <tr>
-                                <th class="p-3 border-b border-slate-200">수정된 폴더</th>
-                                <th class="p-3 border-b border-slate-200 whitespace-nowrap">담당자</th>
-                                <th class="p-3 border-b border-slate-200">설정 갱신 방법 (매우 중요)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
-                            <!-- infra (PM) -->
-                            <tr>
-                                <td class="p-3 font-bold text-indigo-600">infra/</td>
-                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap font-bold">PM (-2-)</span></td>
-                                <td class="p-3 text-slate-600">
-                                    S3 및 DynamoDB는 터미널 배포가 가능합니다.<br>
-                                    <code class="text-xs bg-slate-800 text-emerald-400 p-2 mt-1 rounded block whitespace-pre overflow-x-auto">cd infra
+                <!-- PM 영역 -->
+                <div class="border border-indigo-100 rounded-2xl overflow-hidden">
+                    <div class="bg-indigo-50 px-4 py-3 font-bold text-indigo-800 border-b border-indigo-100 flex items-center justify-between">
+                        <span>👑 PM (-2-) : S3 & DynamoDB 공용 스택</span>
+                        <span class="text-xs bg-indigo-200 text-indigo-700 px-2 py-1 rounded-full">터미널 가능</span>
+                    </div>
+                    <div class="p-4 bg-white text-sm text-slate-600">
+                        <p class="mb-2">저장소 인프라는 CloudShell에서 정상적으로 배포 가능합니다.</p>
+                        <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded block whitespace-pre overflow-x-auto">cd infra
 sam build
 sam deploy --stack-name inhatc-team2-infra --region ap-northeast-2 ...</code>
-                                </td>
-                            </tr>
-                            <!-- backend / data (Teams) -->
-                            <tr>
-                                <td class="p-3 font-bold text-emerald-600">
-                                    backend/<br>
-                                    <span class="text-blue-600 mt-1 block">data_pipeline/<br>real_time/</span>
-                                </td>
-                                <td class="p-3">
-                                    <div class="flex flex-col gap-2">
-                                        <span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap font-bold">고원영 (-1-)</span>
-                                        <span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap font-bold">김호건 (-5-)</span>
-                                    </div>
-                                </td>
-                                <td class="p-3">
-                                    <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-amber-900 font-medium">
-                                        <i class="fas fa-mouse-pointer mr-1"></i> <strong>AWS 웹 콘솔에서 직접(수동) 수정하세요!</strong><br>
-                                        <ul class="list-disc list-inside mt-2 text-xs text-amber-800/80 space-y-1">
-                                            <li>환경 변수 추가: AWS Lambda > 해당 함수 > 구성 > 환경 변수</li>
-                                            <li>트리거 시간 변경: EventBridge 메뉴에서 직접 규칙(Rule) 수정</li>
-                                            <li><code class="text-amber-900 font-bold bg-amber-200 px-1 rounded">template.yaml</code> 파일은 변경 내역 추적용(문서용)으로만 수정해서 Push 하세요. 배포에 반영되지 않습니다.</li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
+
+                <!-- Backend 영역 -->
+                <div class="border border-emerald-100 rounded-2xl overflow-hidden">
+                    <div class="bg-emerald-50 px-4 py-3 font-bold text-emerald-800 border-b border-emerald-100 flex items-center justify-between">
+                        <span>⚙️ 고원영 (-1-) : 추천 API 람다 설정</span>
+                        <span class="text-xs bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded-full">웹 콘솔 수동 세팅</span>
+                    </div>
+                    <div class="p-4 bg-white space-y-4">
+                        <div class="text-sm">
+                            <span class="font-bold text-slate-700 block mb-1">📍 접속 경로:</span>
+                            AWS Lambda 접속 > <span class="code-pill">inhatc-team2-1-recommendAPI</span> 함수 클릭 > <strong>[구성]</strong> 탭 > <strong>[환경 변수]</strong>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <p class="text-xs font-bold text-slate-500 mb-2">필수 환경 변수 목록 (정확히 입력)</p>
+                            <ul class="text-sm space-y-2">
+                                <li class="flex flex-col md:flex-row md:justify-between border-b border-slate-100 pb-2">
+                                    <span class="code-pill">DYNAMODB_TABLE_NAME</span>
+                                    <span class="val-pill mt-1 md:mt-0">inhatc-team2-1-recommend-cache</span>
+                                </li>
+                                <li class="flex flex-col md:flex-row md:justify-between border-b border-slate-100 pb-2">
+                                    <span class="code-pill">S3_BUCKET_NAME</span>
+                                    <span class="val-pill mt-1 md:mt-0">inhatc-team2-5-raw-data</span>
+                                </li>
+                                <li class="flex flex-col md:flex-row md:justify-between">
+                                    <span class="code-pill">BEDROCK_MODEL_ID</span>
+                                    <span class="val-pill mt-1 md:mt-0">anthropic.claude-3-5-haiku-20241022-v1:0</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="text-sm text-slate-600 bg-amber-50 p-3 rounded-lg">
+                            <i class="fas fa-link text-amber-500 mr-1"></i> [구성] > [함수 URL] 에서 <strong>AuthType: NONE</strong>으로 활성화 되어있는지 확인하세요.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Pipeline 영역 -->
+                <div class="border border-sky-100 rounded-2xl overflow-hidden">
+                    <div class="bg-sky-50 px-4 py-3 font-bold text-sky-800 border-b border-sky-100 flex items-center justify-between">
+                        <span>🗄️ 김호건 (-5-) : 데이터 파이프라인 람다 설정</span>
+                        <span class="text-xs bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded-full">웹 콘솔 수동 세팅</span>
+                    </div>
+                    <div class="p-4 bg-white space-y-6">
+                        
+                        <!-- Hourly -->
+                        <div>
+                            <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-2">
+                                <span class="bg-slate-800 text-white w-5 h-5 flex items-center justify-center rounded text-xs">1</span>
+                                정기 수집 함수 (<span class="code-pill">inhatc-team2-5-dataAPI</span>)
+                            </h4>
+                            <div class="ml-7 space-y-3">
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm">
+                                    <p class="text-xs font-bold text-slate-500 mb-2">[구성] > [환경 변수]</p>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between"><span class="code-pill">S3_RAW_BUCKET</span><span class="val-pill">inhatc-team2-5-raw-data</span></div>
+                                        <div class="flex justify-between"><span class="code-pill">WEATHER_API_KEY</span><span class="text-rose-500 text-xs font-bold">(기상청 키)</span></div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-slate-600">
+                                    <span class="font-bold">⏰ 트리거:</span> 함수 메인 화면 > [트리거 추가] > EventBridge > 예약 표현식 <strong>rate(1 hour)</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real-time -->
+                        <div>
+                            <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-2">
+                                <span class="bg-slate-800 text-white w-5 h-5 flex items-center justify-center rounded text-xs">2</span>
+                                실시간 수집 함수 (<span class="code-pill">inhatc-team2-5-real-time-dataAPI</span>)
+                            </h4>
+                            <div class="ml-7 space-y-3">
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm">
+                                    <p class="text-xs font-bold text-slate-500 mb-2">[구성] > [환경 변수]</p>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between"><span class="code-pill">WEATHER_DYNAMODB_TABLE_NAME</span><span class="val-pill">inhatc-team2-5-weather-cache</span></div>
+                                        <div class="flex justify-between"><span class="code-pill">AIR_DYNAMODB_TABLE_NAME</span><span class="val-pill">inhatc-team2-5-air-cache</span></div>
+                                        <div class="flex justify-between"><span class="code-pill">WEATHER_API_KEY</span><span class="text-rose-500 text-xs font-bold">(기상청 키)</span></div>
+                                        <div class="flex justify-between"><span class="code-pill">AIR_API_KEY</span><span class="text-rose-500 text-xs font-bold">(에어코리아 키)</span></div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-slate-600">
+                                    <span class="font-bold">⏰ 트리거:</span> 함수 메인 화면 > [트리거 추가] > EventBridge > 예약 표현식 <strong>rate(30 minutes)</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
 
