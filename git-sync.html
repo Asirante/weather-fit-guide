@@ -19,12 +19,12 @@
         <header class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
             <div class="flex items-center justify-center gap-3 mb-3">
-                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">최종 확정 배포 프로세스</span>
+                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">최종 확정 배포 프로세스 (V4)</span>
             </div>
-            <h1 class="text-3xl font-extrabold text-slate-900 mb-4 tracking-tight">🚨 하이브리드 배포 가이드 (V3)</h1>
+            <h1 class="text-3xl font-extrabold text-slate-900 mb-4 tracking-tight">🚨 하이브리드 배포 가이드</h1>
             <p class="text-slate-500 leading-relaxed">
-                학교 AWS 계정의 보안 정책(Explicit Deny)을 우회하기 위해,<br>
-                <strong>[인프라 수동 갱신]</strong>과 <strong>[코드 자동 배포]</strong>를 분리하는 하이브리드 전략을 채택했습니다.
+                학교 AWS 계정의 강력한 보안 정책(Lambda 자동 생성 차단)에 맞춰,<br>
+                <strong>[인프라 웹 콘솔 수동 갱신]</strong>과 <strong>[파이썬 코드 자동 배포]</strong>를 철저히 분리합니다.
             </p>
         </header>
 
@@ -34,7 +34,7 @@
                 <div class="bg-blue-500 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"><i class="fas fa-code"></i></div>
                 <div>
                     <h2 class="text-xl font-bold text-slate-800">상황 A. 파이썬 코드 / 로직을 수정했을 때</h2>
-                    <p class="text-xs text-blue-600 mt-1">예: lambda_function.py, 프론트엔드 코드 수정</p>
+                    <p class="text-xs text-blue-600 mt-1">예: lambda_function.py 등 파이썬 파일 수정 시</p>
                 </div>
             </div>
             <div class="p-6 md:p-8 space-y-5">
@@ -57,14 +57,17 @@
             <div class="bg-rose-50 border-b border-rose-100 p-6 flex items-center gap-3">
                 <div class="bg-rose-500 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"><i class="fas fa-server"></i></div>
                 <div>
-                    <h2 class="text-xl font-bold text-slate-800">상황 B. 인프라 설정 (template.yaml)을 수정했을 때</h2>
-                    <p class="text-xs text-rose-600 mt-1">예: 메모리 변경, 시간 변경, 새 DB 추가, 환경 변수 추가</p>
+                    <h2 class="text-xl font-bold text-slate-800">상황 B. 인프라 설정(환경변수, 트리거 시간 등)을 수정해야 할 때</h2>
+                    <p class="text-xs text-rose-600 mt-1">예: 새로운 API 키 추가, 수집 스케줄 변경, 람다 메모리 증설</p>
                 </div>
             </div>
             <div class="p-6 md:p-8 space-y-4">
-                <div class="bg-rose-100 text-rose-800 p-4 rounded-xl text-sm font-bold flex gap-3 items-center">
-                    <i class="fas fa-exclamation-triangle text-xl"></i>
-                    <p>인프라 설정 변경은 깃허브 액션이 자동으로 처리하지 못합니다! (권한 없음)<br>반드시 "해당 파트의 담당자"가 본인의 CloudShell에서 수동으로 배포해야 합니다.</p>
+                <div class="bg-rose-100 text-rose-800 p-4 rounded-xl text-sm font-bold flex gap-3 items-start">
+                    <i class="fas fa-exclamation-triangle text-xl mt-0.5"></i>
+                    <p>
+                        학교 계정 정책상 <span class="underline">람다 제어(CloudFormation) 권한이 명시적 거부(Deny)로 차단</span>되어 있습니다.<br>
+                        팀원들은 CloudShell에서 <code class="bg-rose-200 px-1 rounded">sam deploy</code> 명령어를 <strong>절대 사용하지 마세요.</strong> 에러가 발생합니다.
+                    </p>
                 </div>
 
                 <div class="overflow-x-auto border border-slate-200 rounded-xl mt-4">
@@ -73,70 +76,42 @@
                             <tr>
                                 <th class="p-3 border-b border-slate-200">수정된 폴더</th>
                                 <th class="p-3 border-b border-slate-200 whitespace-nowrap">담당자</th>
-                                <th class="p-3 border-b border-slate-200">CloudShell 갱신 명령어 (그대로 복사)</th>
+                                <th class="p-3 border-b border-slate-200">설정 갱신 방법 (매우 중요)</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
-                            <!-- infra -->
+                            <!-- infra (PM) -->
                             <tr>
                                 <td class="p-3 font-bold text-indigo-600">infra/</td>
-                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap">PM (-2-)</span></td>
-                                <td class="p-3">
-                                    <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded-lg block whitespace-pre overflow-x-auto leading-relaxed">cd infra
+                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap font-bold">PM (-2-)</span></td>
+                                <td class="p-3 text-slate-600">
+                                    S3 및 DynamoDB는 터미널 배포가 가능합니다.<br>
+                                    <code class="text-xs bg-slate-800 text-emerald-400 p-2 mt-1 rounded block whitespace-pre overflow-x-auto">cd infra
 sam build
-sam deploy \
-  --stack-name inhatc-team2-infra \
-  --region us-east-1 \
-  --no-confirm-changeset \
-  --capabilities CAPABILITY_IAM \
-  --s3-bucket inhatc-team2-5-raw-data</code>
+sam deploy --stack-name inhatc-team2-infra --region ap-northeast-2 ...</code>
                                 </td>
                             </tr>
-                            <!-- backend -->
+                            <!-- backend / data (Teams) -->
                             <tr>
-                                <td class="p-3 font-bold text-emerald-600">backend/</td>
-                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap">고원영 (-1-)</span></td>
-                                <td class="p-3">
-                                    <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded-lg block whitespace-pre overflow-x-auto leading-relaxed">cd backend
-sam build
-sam deploy \
-  --stack-name inhatc-team2-1-backend \
-  --region us-east-1 \
-  --no-confirm-changeset \
-  --capabilities CAPABILITY_IAM \
-  --s3-bucket inhatc-team2-5-raw-data</code>
+                                <td class="p-3 font-bold text-emerald-600">
+                                    backend/<br>
+                                    <span class="text-blue-600 mt-1 block">data_pipeline/<br>real_time/</span>
                                 </td>
-                            </tr>
-                            <!-- data -->
-                            <tr>
-                                <td class="p-3 font-bold text-blue-600">data_pipeline/</td>
-                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap">김호건 (-5-)</span></td>
                                 <td class="p-3">
-                                    <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded-lg block whitespace-pre overflow-x-auto leading-relaxed">cd data_pipeline
-sam build
-sam deploy \
-  --stack-name inhatc-team2-5-pipeline \
-  --region us-east-1 \
-  --no-confirm-changeset \
-  --capabilities CAPABILITY_IAM \
-  --s3-bucket inhatc-team2-5-raw-data \
-  --parameter-overrides WeatherApiKey="본인기상청키입력"</code>
+                                    <div class="flex flex-col gap-2">
+                                        <span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap font-bold">고원영 (-1-)</span>
+                                        <span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap font-bold">김호건 (-5-)</span>
+                                    </div>
                                 </td>
-                            </tr>
-                            <!-- real time -->
-                            <tr>
-                                <td class="p-3 font-bold text-sky-600">real_time/</td>
-                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap">김호건 (-5-)</span></td>
                                 <td class="p-3">
-                                    <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded-lg block whitespace-pre overflow-x-auto leading-relaxed">cd real_time
-sam build
-sam deploy \
-  --stack-name inhatc-team2-5-realtime \
-  --region us-east-1 \
-  --no-confirm-changeset \
-  --capabilities CAPABILITY_IAM \
-  --s3-bucket inhatc-team2-5-raw-data \
-  --parameter-overrides WeatherApiKey="본인기상청키입력" AirApiKey="본인에어코리아키입력"</code>
+                                    <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                                        <i class="fas fa-mouse-pointer mr-1"></i> <strong>AWS 웹 콘솔에서 직접(수동) 수정하세요!</strong><br>
+                                        <ul class="list-disc list-inside mt-2 text-xs text-amber-800/80 space-y-1">
+                                            <li>환경 변수 추가: AWS Lambda > 해당 함수 > 구성 > 환경 변수</li>
+                                            <li>트리거 시간 변경: EventBridge 메뉴에서 직접 규칙(Rule) 수정</li>
+                                            <li><code class="text-amber-900 font-bold bg-amber-200 px-1 rounded">template.yaml</code> 파일은 변경 내역 추적용(문서용)으로만 수정해서 Push 하세요. 배포에 반영되지 않습니다.</li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -147,11 +122,20 @@ sam deploy \
 
         <!-- Caution -->
         <div class="bg-slate-800 text-white rounded-3xl p-6 shadow-lg border border-slate-700">
-            <h3 class="text-lg font-bold mb-3 text-yellow-400"><i class="fas fa-hand-paper mr-2"></i> 절대 주의사항</h3>
-            <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
-                <li><strong class="text-white">다른 팀원의 인프라 스택을 대신 배포하려 하지 마세요.</strong> 학교 계정 정책상 <code class="bg-slate-600 px-1 rounded">AccessDenied</code> 에러가 발생합니다.</li>
-                <li>환경변수 추가가 필요하다면 <code class="bg-slate-600 px-1 rounded">template.yaml</code> 수정 후 <strong>반드시 해당 팀원이 CloudShell에서 배포</strong>해야 반영됩니다.</li>
-                <li>AWS 콘솔(웹사이트)에서 마우스로 람다 설정을 변경하지 마세요. 다음 배포 시 덮어씌워져 초기화됩니다.</li>
+            <h3 class="text-lg font-bold mb-3 text-emerald-400"><i class="fas fa-check-circle mr-2"></i> 결론: 우리의 확실한 작업 방식</h3>
+            <ul class="text-sm text-slate-300 space-y-3 list-none">
+                <li class="flex items-start gap-2">
+                    <span class="bg-slate-700 text-slate-300 w-5 h-5 rounded flex items-center justify-center text-xs font-bold mt-0.5">1</span>
+                    <p><strong class="text-white">람다 껍데기와 설정(환경변수 등)은 AWS 웹 콘솔에서 마우스로 만듭니다.</strong></p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="bg-slate-700 text-slate-300 w-5 h-5 rounded flex items-center justify-center text-xs font-bold mt-0.5">2</span>
+                    <p><strong class="text-white">그 안의 파이썬 코드(.py)는 로컬에서 짜고 깃허브에 푸시합니다.</strong></p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="bg-slate-700 text-slate-300 w-5 h-5 rounded flex items-center justify-center text-xs font-bold mt-0.5">3</span>
+                    <p>나머지는 깃허브 액션이 1분 안에 람다 코드를 갈아끼워주며 자동으로 완성됩니다.</p>
+                </li>
             </ul>
         </div>
 
