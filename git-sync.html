@@ -21,7 +21,7 @@
         <header class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
             <div class="flex items-center justify-center gap-3 mb-3">
-                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">최종 확정 배포 프로세스 (V5 - 상세 가이드)</span>
+                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">최종 확정 배포 프로세스 (V6 - 리전/DB명 갱신)</span>
             </div>
             <h1 class="text-3xl font-extrabold text-slate-900 mb-4 tracking-tight">🚨 하이브리드 배포 가이드</h1>
             <p class="text-slate-500 leading-relaxed">
@@ -83,7 +83,7 @@
                         <p class="mb-2">저장소 인프라는 CloudShell에서 정상적으로 배포 가능합니다.</p>
                         <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded block whitespace-pre overflow-x-auto">cd infra
 sam build
-sam deploy --stack-name inhatc-team2-infra --region ap-northeast-2 ...</code>
+sam deploy --stack-name inhatc-team2-infra --region us-east-1 ...</code>
                     </div>
                 </div>
 
@@ -103,7 +103,7 @@ sam deploy --stack-name inhatc-team2-infra --region ap-northeast-2 ...</code>
                             <ul class="text-sm space-y-2">
                                 <li class="flex flex-col md:flex-row md:justify-between border-b border-slate-100 pb-2">
                                     <span class="code-pill">DYNAMODB_TABLE_NAME</span>
-                                    <span class="val-pill mt-1 md:mt-0">inhatc-team2-1-recommend-cache</span>
+                                    <span class="val-pill mt-1 md:mt-0">team2-recommend-cache</span>
                                 </li>
                                 <li class="flex flex-col md:flex-row md:justify-between border-b border-slate-100 pb-2">
                                     <span class="code-pill">S3_BUCKET_NAME</span>
@@ -159,8 +159,8 @@ sam deploy --stack-name inhatc-team2-infra --region ap-northeast-2 ...</code>
                                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm">
                                     <p class="text-xs font-bold text-slate-500 mb-2">[구성] > [환경 변수]</p>
                                     <div class="space-y-2">
-                                        <div class="flex justify-between"><span class="code-pill">WEATHER_DYNAMODB_TABLE_NAME</span><span class="val-pill">inhatc-team2-5-weather-cache</span></div>
-                                        <div class="flex justify-between"><span class="code-pill">AIR_DYNAMODB_TABLE_NAME</span><span class="val-pill">inhatc-team2-5-air-cache</span></div>
+                                        <div class="flex justify-between"><span class="code-pill">WEATHER_DYNAMODB_TABLE_NAME</span><span class="val-pill">team2-weather-cache</span></div>
+                                        <div class="flex justify-between"><span class="code-pill">AIR_DYNAMODB_TABLE_NAME</span><span class="val-pill">team2-air-cache</span></div>
                                         <div class="flex justify-between"><span class="code-pill">WEATHER_API_KEY</span><span class="text-rose-500 text-xs font-bold">(기상청 키)</span></div>
                                         <div class="flex justify-between"><span class="code-pill">AIR_API_KEY</span><span class="text-rose-500 text-xs font-bold">(에어코리아 키)</span></div>
                                     </div>
