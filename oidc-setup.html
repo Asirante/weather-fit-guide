@@ -15,7 +15,6 @@
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            // alert 대신 하단 메시지 박스 권장이나, 기존 코드 유지
         }
     </script>
 </head>
@@ -30,6 +29,7 @@
                     <h1 class="text-3xl font-extrabold mb-2"><i class="fas fa-rocket mr-3"></i>weather-fit CI/CD 구축 액션 플랜</h1>
                     <p class="text-indigo-100 text-lg">inhatc-team2 모노레포 자동화 배포 파이프라인 완성하기</p>
                 </div>
+                <span class="bg-indigo-700 border border-indigo-400 text-indigo-100 px-3 py-1 rounded-full text-sm font-bold">리전: us-east-1</span>
             </div>
         </header>
 
@@ -90,7 +90,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ap-northeast-2 <span class="text-slate-500"># 사용하는 서울 리전</span></pre>
+          aws-region: us-east-1  <span class="text-slate-500"># 팀 통일 리전 (버지니아 북부)</span></pre>
                     </div>
                 </div>
             </div>
@@ -104,30 +104,59 @@ jobs:
                     
                     <!-- Front -->
                     <div class="mb-6">
-                        <h3 class="font-bold text-indigo-600 mb-2"><i class="fas fa-desktop mr-2"></i>프론트엔드 (최혁 님)</h3>
-                        <p class="text-sm text-slate-600 mb-2">빌드된 Vue.js 파일(dist)을 S3에 동기화하고 CloudFront 캐시를 초기화합니다.</p>
+                        <h3 class="font-bold text-indigo-600 mb-2"><i class="fas fa-desktop mr-2"></i>프론트엔드 (최혁 님) — deploy-frontend.yml</h3>
                         <div class="relative bg-slate-800 rounded-lg p-3">
                             <button onclick="copyCode('code-front')" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs px-2 py-1 rounded">복사</button>
                             <pre id="code-front" class="text-sm text-slate-300 font-mono">
-- name: Deploy to S3 and Invalidate CloudFront
+- name: Deploy to S3
   run: |
-    aws s3 sync frontend/dist/ s3://[본인S3버킷이름] --delete
-    aws cloudfront create-invalidation --distribution-id [클라우드프론트ID] --paths "/*"</pre>
+    aws s3 sync frontend/dist/ s3://inhatc-team2-3-frontend --delete</pre>
                         </div>
                     </div>
 
                     <!-- Backend / Data -->
-                    <div>
-                        <h3 class="font-bold text-indigo-600 mb-2"><i class="fas fa-server mr-2"></i>백엔드 & 데이터 (고원영 님, 김호건 님)</h3>
-                        <p class="text-sm text-slate-600 mb-2">패키징된 <code>deploy.zip</code> 파일을 각각의 람다 함수에 업데이트합니다.</p>
+                    <div class="mb-6">
+                        <h3 class="font-bold text-indigo-600 mb-2"><i class="fas fa-server mr-2"></i>백엔드 (고원영 님) — deploy-backend.yml</h3>
                         <div class="relative bg-slate-800 rounded-lg p-3">
                             <button onclick="copyCode('code-back')" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs px-2 py-1 rounded">복사</button>
                             <pre id="code-back" class="text-sm text-slate-300 font-mono">
-- name: Deploy to AWS Lambda
+- name: Zip and Update Code
   run: |
+    cd backend
+    zip -r ../deploy.zip .
     aws lambda update-function-code \
-      --function-name [본인람다함수이름] \
-      --zip-file fileb://deploy.zip</pre>
+      --function-name inhatc-team2-1-recommendAPI \
+      --zip-file fileb://../deploy.zip</pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h3 class="font-bold text-indigo-600 mb-2"><i class="fas fa-database mr-2"></i>데이터 파이프라인 (김호건 님) — deploy-data-pipeline.yml</h3>
+                        <div class="relative bg-slate-800 rounded-lg p-3">
+                            <button onclick="copyCode('code-data')" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs px-2 py-1 rounded">복사</button>
+                            <pre id="code-data" class="text-sm text-slate-300 font-mono">
+- name: Zip and Update Code
+  run: |
+    cd data_pipeline
+    zip -r ../deploy.zip .
+    aws lambda update-function-code \
+      --function-name inhatc-team2-5-dataAPI \
+      --zip-file fileb://../deploy.zip</pre>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-indigo-600 mb-2"><i class="fas fa-bolt mr-2"></i>실시간 파이프라인 (김호건 님) — deploy-real-time.yml</h3>
+                        <div class="relative bg-slate-800 rounded-lg p-3">
+                            <button onclick="copyCode('code-realtime')" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs px-2 py-1 rounded">복사</button>
+                            <pre id="code-realtime" class="text-sm text-slate-300 font-mono">
+- name: Zip and Update Code
+  run: |
+    cd real_time
+    zip -r ../deploy.zip .
+    aws lambda update-function-code \
+      --function-name inhatc-team2-5-real-time-dataAPI \
+      --zip-file fileb://../deploy.zip</pre>
                         </div>
                     </div>
                 </div>
@@ -135,12 +164,11 @@ jobs:
 
             <hr class="border-slate-200">
 
-            <!-- Step 5 (PR 가이드라인 반영 업데이트) -->
+            <!-- Step 5 -->
             <div class="flex gap-6">
                 <div class="w-12 h-12 shrink-0 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl font-bold">5</div>
                 <div class="flex-1">
                     <h2 class="text-xl font-bold mb-2">PR 생성 및 자동 배포 테스트 <span class="text-sm font-normal text-slate-500 ml-2">(공통)</span></h2>
-                    <p class="text-slate-600 mb-4">코드 작성이 완료되면 가이드라인에 따라 <code>develop</code> 브랜치로 PR을 올리고 배포를 확인합니다.</p>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
@@ -156,7 +184,7 @@ jobs:
                             <h4 class="font-bold text-sm text-slate-700 mb-2"><i class="fas fa-tasks mr-2"></i>Actions 체크리스트</h4>
                             <ul class="text-xs text-slate-600 space-y-2">
                                 <li><i class="fas fa-check text-green-500 mr-1"></i> GitHub <strong>Actions</strong> 탭에서 작업 성공 확인</li>
-                                <li><i class="fas fa-check text-green-500 mr-1"></i> 자신의 파트(Front/Back) 액션만 돌았는지 확인</li>
+                                <li><i class="fas fa-check text-green-500 mr-1"></i> 수정한 폴더의 workflow만 실행되었는지 확인 (path filter)</li>
                                 <li><i class="fas fa-times text-red-500 mr-1"></i> 실패 시 로그를 확인하고 <code class="bg-white px-1">main</code> 직접 Push 금지</li>
                             </ul>
                         </div>
@@ -164,7 +192,7 @@ jobs:
 
                     <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-lg">
                         <p class="text-sm text-indigo-800">
-                            <i class="fas fa-info-circle mr-2"></i> <strong>기억하세요!</strong> <code>main</code> 브랜치는 보호되어 있습니다. 모든 변경사항은 PR을 거쳐야만 배포 파이프라인이 정상적으로 동작합니다.
+                            <i class="fas fa-info-circle mr-2"></i> <strong>기억하세요!</strong> 각 워크플로우에는 <strong>path filter</strong>가 설정되어 있습니다. <code>backend/</code>를 수정하면 backend workflow만, <code>real_time/</code>을 수정하면 real-time workflow만 실행됩니다.
                         </p>
                     </div>
                 </div>
@@ -178,7 +206,6 @@ jobs:
             </a>
         </div>
         
-        <!-- Footer -->
         <div class="bg-gray-100 p-6 text-center text-sm text-gray-500">
             <p>협업 가이드라인을 준수하여 안정적인 배포 환경을 유지합시다.</p>
         </div>

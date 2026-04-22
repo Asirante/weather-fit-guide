@@ -26,6 +26,9 @@
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500"></div>
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight mt-2">🌤️ Team 2 AWS 실무 구축 가이드</h1>
             <p class="text-lg text-gray-500 mb-6">각 팀원별 사용해야 할 AWS 서비스와 구체적인 To-Do 리스트 및 리소스 현황</p>
+            <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 rounded-full text-sm font-semibold">
+                ⚠️ 리전: <code class="font-bold">us-east-1</code> (버지니아 북부) 통일
+            </div>
         </header>
 
         <!-- Section: Resource Request Guide -->
@@ -104,17 +107,17 @@
                                 <tbody class="text-gray-700 divide-y divide-gray-50">
                                     <tr>
                                         <td class="py-3"><code class="bg-gray-100 text-red-600 px-2 py-1 rounded">inhatc-team2-5-dataAPI</code></td>
-                                        <td class="py-3">raw 데이터 수집</td>
+                                        <td class="py-3">raw 데이터 수집 (rate(1 hour))</td>
                                         <td class="py-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
                                     </tr>
                                     <tr>
                                         <td class="py-3"><code class="bg-gray-100 text-red-600 px-2 py-1 rounded">inhatc-team2-5-real-time-dataAPI</code></td>
-                                        <td class="py-3">실시간 공공데이터 수집</td>
+                                        <td class="py-3">실시간 공공데이터 수집 (rate(30 minutes))</td>
                                         <td class="py-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
                                     </tr>
                                     <tr>
                                         <td class="py-3"><code class="bg-gray-100 text-red-600 px-2 py-1 rounded">inhatc-team2-1-recommendAPI</code></td>
-                                        <td class="py-3">날씨 기반 옷 추천 API</td>
+                                        <td class="py-3">날씨 기반 옷 추천 API (Function URL)</td>
                                         <td class="py-3 font-bold text-green-600">고원영 (Backend)</td>
                                     </tr>
                                 </tbody>
@@ -140,24 +143,28 @@
                                 <thead>
                                     <tr class="text-gray-500 border-b border-gray-100">
                                         <th class="pb-3 font-semibold w-1/3">리소스 이름</th>
-                                        <th class="pb-3 font-semibold w-1/2">용도</th>
+                                        <th class="pb-3 font-semibold">파티션 키</th>
+                                        <th class="pb-3 font-semibold w-1/3">용도</th>
                                         <th class="pb-3 font-semibold">담당자</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-gray-700 divide-y divide-gray-50">
                                     <tr>
-                                        <td class="py-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">team2-weather-cache</code></td>
-                                        <td class="py-3">현재 날씨 상태 저장 용도</td>
+                                        <td class="py-3"><code class="bg-gray-100 text-orange-600 px-2 py-1 rounded">inhatc-team2-5-weather-cache</code></td>
+                                        <td class="py-3"><code class="text-xs">region_code</code></td>
+                                        <td class="py-3">현재 날씨 상태 저장</td>
                                         <td class="py-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3"><code class="bg-gray-100 text-teal-600 px-2 py-1 rounded">team2-air-cache</code></td>
-                                        <td class="py-3">현재 대기 상태 저장 용도</td>
+                                        <td class="py-3"><code class="bg-gray-100 text-teal-600 px-2 py-1 rounded">inhatc-team2-5-air-cache</code></td>
+                                        <td class="py-3"><code class="text-xs">stationKey</code></td>
+                                        <td class="py-3">현재 대기 상태 저장</td>
                                         <td class="py-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3"><code class="bg-gray-100 text-pink-600 px-2 py-1 rounded">team2-recommend-cache</code></td>
-                                        <td class="py-3">옷 추천 결과 캐싱 용도</td>
+                                        <td class="py-3"><code class="bg-gray-100 text-purple-600 px-2 py-1 rounded">inhatc-team2-1-recommend-cache</code></td>
+                                        <td class="py-3"><code class="text-xs">weather_pattern</code></td>
+                                        <td class="py-3">옷 추천 결과 캐싱 (TTL 영구)</td>
                                         <td class="py-3 font-bold text-green-600">고원영 (Backend)</td>
                                     </tr>
                                 </tbody>
@@ -183,19 +190,19 @@
                                 <thead>
                                     <tr class="text-gray-500 border-b border-gray-100">
                                         <th class="pb-3 font-semibold w-1/3">리소스 이름</th>
-                                        <th class="pb-3 font-semibold w-1/2">용도</th>
+                                        <th class="pb-3 font-semibold w-1/2">스케줄 / 용도</th>
                                         <th class="pb-3 font-semibold">담당자</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-gray-700 divide-y divide-gray-50">
                                     <tr>
                                         <td class="py-3"><code class="bg-gray-100 text-indigo-600 px-2 py-1 rounded">inhatc-team2-data-trigger</code></td>
-                                        <td class="py-3">raw 데이터 수집 스케줄러 (rate 기반)</td>
+                                        <td class="py-3"><code class="text-xs">rate(1 hour)</code> — raw 데이터 수집</td>
                                         <td class="py-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3"><code class="bg-gray-100 text-indigo-600 px-2 py-1 rounded">inhatc-team2-real-time-trigger</code></td>
-                                        <td class="py-3">실시간 데이터 수집 스케줄러 (rate 기반)</td>
+                                        <td class="py-3"><code class="bg-gray-100 text-indigo-600 px-2 py-1 rounded">inhatc-team2-5-real-time-trigger</code></td>
+                                        <td class="py-3"><code class="text-xs">rate(30 minutes)</code> — 실시간 날씨·대기질 수집</td>
                                         <td class="py-3 font-bold text-blue-600">김호건 (Data Eng.)</td>
                                     </tr>
                                 </tbody>
@@ -223,10 +230,10 @@
                 <div class="mb-6">
                     <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">활용할 AWS 서비스</h4>
                     <div class="flex flex-wrap">
-                        <span class="service-tag tag-compute">Lambda (수집용)</span>
+                        <span class="service-tag tag-compute">Lambda (수집용 x2)</span>
                         <span class="service-tag tag-compute">EventBridge</span>
                         <span class="service-tag tag-storage">S3 (Raw Data)</span>
-                        <span class="service-tag tag-database">DynamoDB (기상/대기 캐시)</span>
+                        <span class="service-tag tag-database">DynamoDB (weather / air 캐시)</span>
                     </div>
                 </div>
 
@@ -235,21 +242,19 @@
                     <ul class="space-y-3 text-sm text-gray-700">
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>데이터 수집 로직 (Lambda):</strong> <br>
-                            <code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-5-dataAPI</code> 및 <code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-5-real-time-dataAPI</code>를 활용하여 파이썬 코드로 날씨/대기질 데이터를 수집합니다.</span>
+                            <span><strong>정기 수집 Lambda (<code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-5-dataAPI</code>):</strong> 기상청·에어코리아 API 호출 → S3(<code class="text-xs bg-gray-100 text-pink-600 px-1">inhatc-team2-5-raw-data</code>) 적재. 트리거: <code class="text-xs">rate(1 hour)</code></span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>스케줄러 연동 (EventBridge):</strong> <br>
-                            <code class="text-xs bg-gray-100 text-indigo-600 px-1">inhatc-team2-data-trigger</code> 및 <code class="text-xs bg-gray-100 text-indigo-600 px-1">inhatc-team2-real-time-trigger</code>를 통해 rate 기반으로 스케줄이 동작하도록 설정합니다.</span>
+                            <span><strong>실시간 수집 Lambda (<code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-5-real-time-dataAPI</code>):</strong> 초단기실황·대기질 수집 → DynamoDB 적재. 트리거: <code class="text-xs">rate(30 minutes)</code> (<code class="text-xs">inhatc-team2-5-real-time-trigger</code>)</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>데이터 적재 (S3):</strong> API에서 받아온 원본 JSON 데이터를 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">inhatc-team2-5-raw-data</code>)에 누적 저장합니다.</span>
+                            <span><strong>DynamoDB 날씨 적재 (<code class="text-xs bg-gray-100 text-orange-600 px-1">inhatc-team2-5-weather-cache</code>):</strong> PK = <code class="text-xs">region_code</code>, 최신 날씨 상태 PutItem</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-blue-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>상태 업데이트 (DynamoDB):</strong> 가공된 현재 날씨(team2-weather-cache) 및 대기 상태(team2-air-cache) 데이터를 DynamoDB 테이블에 업데이트(PutItem) 합니다.</span>
+                            <span><strong>DynamoDB 대기 적재 (<code class="text-xs bg-gray-100 text-teal-600 px-1">inhatc-team2-5-air-cache</code>):</strong> PK = <code class="text-xs">stationKey</code>, 최신 대기 상태 PutItem</span>
                         </li>
                     </ul>
                 </div>
@@ -281,21 +286,19 @@
                     <ul class="space-y-3 text-sm text-gray-700">
                         <li class="flex items-start">
                             <span class="text-green-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>서버리스 API 구축 (Lambda):</strong> <br>
-                            <code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-1-recommendAPI</code>를 통해 확정될 데이터를 기반으로 날씨 옷 추천 API 로직을 작성합니다.</span>
+                            <span><strong>서버리스 API 구축 (<code class="text-xs bg-gray-100 text-red-600 px-1">inhatc-team2-1-recommendAPI</code>):</strong> <code class="text-xs bg-gray-100 text-orange-600 px-1">inhatc-team2-5-weather-cache</code> / <code class="text-xs bg-gray-100 text-teal-600 px-1">inhatc-team2-5-air-cache</code> 조회 후 기상 패턴 동적 조립</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-green-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>엔드포인트 생성:</strong> API Gateway 대신 Lambda Function URL을 활성화하여 프론트엔드가 호출할 수 있는 HTTP 주소를 만듭니다.</span>
+                            <span><strong>엔드포인트 생성:</strong> Lambda Function URL (AuthType: NONE) 활성화, CORS 설정</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-green-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>캐싱 로직 구현 (DynamoDB):</strong> <br>
-                            <code class="text-xs bg-gray-100 text-pink-600 px-1">team2-recommend-cache</code>를 활용하여 프론트의 요청이 오면 기상패턴을 Key로 이 테이블을 조회하고, 캐시 히트 시 즉시 반환합니다.</span>
+                            <span><strong>캐싱 로직 구현 (<code class="text-xs bg-gray-100 text-purple-600 px-1">inhatc-team2-1-recommend-cache</code>):</strong> PK = <code class="text-xs">weather_pattern</code>으로 캐시 조회. 히트 시 즉시 반환</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-green-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>AI 호출 및 적재:</strong> 캐시(DB)에 없는 신규 날씨인 경우, Bedrock API를 호출해 추천을 받고, 이 결과를 DB에 저장한 후 프론트에 반환합니다.</span>
+                            <span><strong>AI 호출 및 적재:</strong> 캐시 미스 시 Bedrock(<code class="text-xs">anthropic.claude-3-5-haiku-20241022-v1:0</code>) 호출 → 결과를 <code class="text-xs bg-gray-100 text-purple-600 px-1">inhatc-team2-1-recommend-cache</code>에 저장 후 반환</span>
                         </li>
                     </ul>
                 </div>
@@ -318,8 +321,7 @@
                         <span class="service-tag tag-ai">Amazon Bedrock</span>
                         <span class="service-tag tag-analytics">AWS Glue</span>
                         <span class="service-tag tag-analytics">Amazon Athena</span>
-                        <span class="service-tag tag-ai">SageMaker Notebook</span>
-                        <span class="service-tag tag-database">DynamoDB</span>
+                        <span class="service-tag tag-storage">S3 (inhatc-team2-4-parquet-data)</span>
                     </div>
                 </div>
 
@@ -332,15 +334,15 @@
                         </li>
                         <li class="flex items-start">
                             <span class="text-purple-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>Glue 데이터 카탈로그 생성:</strong> 데이터 엔지니어가 수집한 S3 원본 데이터의 스키마를 추출하고 분석 가능한 테이블 형태로 매핑하기 위해 AWS Glue 크롤러(Crawler)를 세팅합니다.</span>
+                            <span><strong>Glue 데이터 카탈로그 생성:</strong> <code class="text-xs bg-gray-100 text-pink-600 px-1">inhatc-team2-5-raw-data</code>의 스키마를 Glue 크롤러로 추출, Athena에서 쿼리 가능한 테이블 생성</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-purple-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>Athena 데이터 쿼리:</strong> Glue로 매핑된 S3 원본 데이터를 Amazon Athena를 통해 표준 SQL로 쿼리하여 주요 기상 패턴과 통계 인사이트를 분석합니다.</span>
+                            <span><strong>Parquet 변환:</strong> JSON → Parquet 변환 후 <code class="text-xs bg-gray-100 text-pink-600 px-1">inhatc-team2-4-parquet-data</code>에 적재</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-purple-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>심화 분석 및 검수:</strong> (필요시) SageMaker Notebook을 통해 분석 환경을 구성하고, DynamoDB에 쌓이는 AI 추천 내역을 모니터링하여 가이드라인을 정제합니다.</span>
+                            <span><strong>Athena 데이터 쿼리:</strong> 주요 기상 패턴과 통계 인사이트 분석</span>
                         </li>
                     </ul>
                 </div>
@@ -360,7 +362,7 @@
                 <div class="mb-6">
                     <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">활용할 AWS 서비스</h4>
                     <div class="flex flex-wrap">
-                        <span class="service-tag tag-storage">S3 (Web Hosting)</span>
+                        <span class="service-tag tag-storage">S3 (inhatc-team2-3-frontend)</span>
                         <span class="service-tag tag-network">CloudFront</span>
                         <span class="service-tag tag-network">Route53</span>
                         <span class="service-tag tag-network">ACM (HTTPS)</span>
@@ -373,19 +375,19 @@
                     <ul class="space-y-3 text-sm text-gray-700">
                         <li class="flex items-start">
                             <span class="text-orange-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>정적 웹 배포:</strong> React 등으로 개발한 프론트엔드 빌드 파일을 S3 버킷(<code class="text-xs text-pink-500 bg-gray-50 px-1">inhatc-team2-3-frontend</code>)에 업로드하여 호스팅의 뼈대를 잡습니다.</span>
+                            <span><strong>정적 웹 배포:</strong> Vue.js 빌드 파일(dist)을 <code class="text-xs text-pink-500 bg-gray-50 px-1">inhatc-team2-3-frontend</code> 버킷에 업로드</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-orange-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>CDN 연동:</strong> CloudFront를 생성하고 OAC(Origin Access Control)를 설정하여 S3에 직접 접근을 막고 엣지 캐싱을 적용합니다.</span>
+                            <span><strong>CDN 연동:</strong> CloudFront OAC 설정으로 S3 직접 접근 차단 및 엣지 캐싱 활성화</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-orange-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>도메인 & HTTPS:</strong> Route53에서 커스텀 도메인을 연결하고, ACM에서 발급받은 인증서를 CloudFront에 붙여 HTTPS 보안 처리를 합니다.</span>
+                            <span><strong>도메인 & HTTPS:</strong> Route53 도메인 연결, ACM 인증서 발급 후 CloudFront에 적용</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-orange-500 mr-2 mt-0.5">✅</span>
-                            <span><strong>보안 방화벽:</strong> WAF(웹 방화벽)를 생성하여 CloudFront 앞단에 배치, 악성 요청(DDoS 등)을 차단합니다.</span>
+                            <span><strong>보안 방화벽:</strong> WAFv2를 CloudFront에 연결하여 악성 요청(DDoS 등) 차단</span>
                         </li>
                     </ul>
                 </div>
@@ -396,7 +398,7 @@
 
         <div class="text-center pt-4 pb-8">
             <a href="index.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i> 문서 포털로 돌아가기
+                ← 문서 포털로 돌아가기
             </a>
         </div>
 </body>
