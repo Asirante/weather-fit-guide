@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team 2: Git 이관 및 SAM 동기화 가이드</title>
+    <title>Team 2: 하이브리드 배포 및 동기화 가이드</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -17,114 +17,127 @@
         
         <!-- Header -->
         <header class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 to-orange-500"></div>
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
             <div class="flex items-center justify-center gap-3 mb-3">
-                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">긴급 공지사항</span>
+                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">최종 확정 배포 프로세스</span>
             </div>
-            <h1 class="text-3xl font-extrabold text-slate-900 mb-4 tracking-tight">🚨 AWS 콘솔 직접 수정 금지 & Git 동기화</h1>
+            <h1 class="text-3xl font-extrabold text-slate-900 mb-4 tracking-tight">🚨 하이브리드 배포 가이드 (V3)</h1>
             <p class="text-slate-500 leading-relaxed">
-                CI/CD 자동 배포 파이프라인 구축이 완료되었습니다!<br>
-                이제부터 <strong>AWS 콘솔(웹사이트)에서 직접 코드를 짜거나 인프라를 수정하는 행위를 전면 금지</strong>합니다.<br>
-                기존에 만들어둔 모든 작업물을 GitHub 레포지토리로 이관하고 동기화하는 작업을 즉시 진행해 주세요.
+                학교 AWS 계정의 보안 정책(Explicit Deny)을 우회하기 위해,<br>
+                <strong>[인프라 수동 갱신]</strong>과 <strong>[코드 자동 배포]</strong>를 분리하는 하이브리드 전략을 채택했습니다.
             </p>
         </header>
 
-        <!-- Task 1: 소스 코드 Git 이관 -->
+        <!-- Case 1: Code Update -->
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-blue-50 border-b border-blue-100 p-6 flex items-center gap-3">
-                <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">1</div>
-                <h2 class="text-xl font-bold text-slate-800">기존 작업물 소스 코드 Git 이관</h2>
+                <div class="bg-blue-500 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"><i class="fas fa-code"></i></div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">상황 A. 파이썬 코드 / 로직을 수정했을 때</h2>
+                    <p class="text-xs text-blue-600 mt-1">예: lambda_function.py, 프론트엔드 코드 수정</p>
+                </div>
             </div>
             <div class="p-6 md:p-8 space-y-5">
-                <p class="text-slate-600 text-sm mb-4">
-                    현재 AWS 콘솔이나 개인 로컬에만 존재하는 코드들을 깃허브의 알맞은 폴더로 옮겨주세요.
-                </p>
-                
-                <!-- 백엔드 -->
-                <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
-                    <div class="text-2xl mt-1">⚙️</div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">백엔드 & 인프라 (고원영 님)</h3>
-                        <p class="text-sm text-slate-600 mt-1">현재 람다(Lambda) 콘솔에서 직접 테스트했던 FastAPI 및 추천 API 파이썬 코드 전체를 <code class="bg-white px-1 border rounded text-pink-600">backend/</code> 폴더 안으로 가져와서 커밋해 주세요. 또한 백엔드 람다 실행을 위한 <code class="bg-white px-1 border rounded">template.yaml</code> 설정도 동기화해 주셔야 합니다.</p>
-                    </div>
+                <div class="flex items-center gap-4 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                    <i class="fas fa-robot text-3xl text-blue-400"></i>
+                    <p class="text-sm text-slate-600">
+                        <strong class="text-blue-700">GitHub Actions가 100% 자동 처리합니다.</strong><br>
+                        로컬에서 코드를 수정한 뒤 GitHub에 `git push`만 하세요. AWS 콘솔이나 CloudShell에 들어갈 필요가 전혀 없습니다.
+                    </p>
                 </div>
-
-                <!-- 데이터 파이프라인 -->
-                <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
-                    <div class="text-2xl mt-1">🗄️</div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">데이터 엔지니어 (김호건 님)</h3>
-                        <p class="text-sm text-slate-600 mt-1">기상청/에어코리아 API를 호출하고 데이터를 수집/정제하는 파이썬 코드를 <code class="bg-white px-1 border rounded text-pink-600">data_pipeline/</code> 폴더로 가져와서 커밋해 주세요.</p>
-                    </div>
-                </div>
-
-                <!-- 프론트엔드 -->
-                <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
-                    <div class="text-2xl mt-1">🖥️</div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">프론트엔드 (최혁 님)</h3>
-                        <p class="text-sm text-slate-600 mt-1">더미 데이터로 구성해 둔 Vue.js 프로토타입 소스 코드를 <code class="bg-white px-1 border rounded text-pink-600">frontend/</code> 폴더 안에 넣고 커밋해 주세요.</p>
-                    </div>
-                </div>
+                <ul class="list-disc list-inside text-sm text-slate-600 space-y-2 ml-2">
+                    <li><span class="font-bold">백엔드/데이터:</span> 코드가 압축되어 AWS 람다로 자동 업데이트 (<code class="bg-slate-100 px-1 rounded">update-function-code</code>)</li>
+                    <li class="opacity-50"><span class="font-bold">프론트엔드 (최혁 님):</span> <span class="bg-slate-200 text-slate-500 px-2 py-0.5 rounded text-xs font-bold">작업 예정</span> (아직 CI/CD 적용 전입니다)</li>
+                </ul>
             </div>
         </div>
 
-        <!-- Task 2: AWS 인프라 SAM 동기화 -->
+        <!-- Case 2: Infra Update -->
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-purple-50 border-b border-purple-100 p-6 flex items-center gap-3">
-                <div class="bg-purple-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">2</div>
-                <h2 class="text-xl font-bold text-slate-800">AWS 인프라 설정 SAM (template.yaml) 동기화</h2>
+            <div class="bg-rose-50 border-b border-rose-100 p-6 flex items-center gap-3">
+                <div class="bg-rose-500 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"><i class="fas fa-server"></i></div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">상황 B. 인프라 설정 (template.yaml)을 수정했을 때</h2>
+                    <p class="text-xs text-rose-600 mt-1">예: 메모리 변경, 시간 변경, 새 DB 추가, 환경 변수 추가</p>
+                </div>
             </div>
             <div class="p-6 md:p-8 space-y-4">
-                <p class="text-slate-600 text-sm mb-2">
-                    단순 코드뿐만 아니라, 콘솔에서 마우스로 설정한 <strong>인프라 설정(IaC)</strong>도 모두 문서화해야 합니다. 이를 맞추지 않으면 자동 배포 시 에러가 발생하거나 기존 설정이 덮어씌워질 수 있습니다.
-                </p>
-
-                <!-- 기존 인프라에 대한 PM/인프라 담당자 지침 -->
-                <div class="bg-rose-50 p-4 rounded-xl border border-rose-200 mb-4">
-                    <h3 class="font-bold text-rose-800 flex items-center gap-2 mb-2">
-                        <i class="fas fa-exclamation-circle"></i> 이미 생성된 인프라 리소스 (S3, DB 등) 처리 방법
-                    </h3>
-                    <p class="text-sm text-rose-700 leading-relaxed mb-2">
-                        현재 AWS 콘솔에 이미 만들어둔 S3 버킷과 DynamoDB 테이블은 PM 또는 인프라 담당자가 <code class="font-bold bg-rose-100 px-1 rounded">infra/template.yaml</code> 파일에 코드로 직접 작성하여 깃허브에 올려주셔야 합니다. (Reverse IaC 작업)
-                    </p>
-                    <ul class="text-sm text-rose-700 list-disc list-inside space-y-1">
-                        <li>실제 콘솔에 있는 이름과 설정을 코드에 동일하게 기입해야 충돌이 없습니다.</li>
-                        <li><strong>주의:</strong> <code class="bg-rose-100 px-1 rounded">infra/</code> 폴더의 인프라 배포는 위험 방지를 위해 GitHub Actions로 자동화하지 않으며, <strong>로컬 터미널에서 수동으로(sam deploy) 진행</strong>합니다.</li>
-                    </ul>
-                </div>
-
-                <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 text-sm text-yellow-800 mb-4 flex gap-3 items-start">
-                    <i class="fas fa-check-circle mt-1 text-yellow-600"></i>
-                    <div>
-                        <strong>개발자 To-Do:</strong> 본인이 AWS 콘솔에서 설정한 람다(Lambda) 메모리 크기, 타임아웃, 환경 변수 등은 각 파트 폴더(<code class="bg-yellow-100 px-1 rounded">backend/</code>, <code class="bg-yellow-100 px-1 rounded">data_pipeline/</code>)에 있는 <code class="font-bold">template.yaml</code> 파일에 똑같이 채워 넣어주세요!
-                    </div>
+                <div class="bg-rose-100 text-rose-800 p-4 rounded-xl text-sm font-bold flex gap-3 items-center">
+                    <i class="fas fa-exclamation-triangle text-xl"></i>
+                    <p>인프라 설정 변경은 깃허브 액션이 자동으로 처리하지 못합니다! (권한 없음)<br>반드시 "해당 파트의 담당자"가 본인의 CloudShell에서 수동으로 배포해야 합니다.</p>
                 </div>
 
                 <div class="overflow-x-auto border border-slate-200 rounded-xl mt-4">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-50 text-slate-600">
                             <tr>
-                                <th class="p-3 border-b border-slate-200">AWS 인프라 리소스</th>
-                                <th class="p-3 border-b border-slate-200">관리 방법 (어떻게 만들어야 하나요?)</th>
+                                <th class="p-3 border-b border-slate-200">수정된 폴더</th>
+                                <th class="p-3 border-b border-slate-200 whitespace-nowrap">담당자</th>
+                                <th class="p-3 border-b border-slate-200">CloudShell 갱신 명령어 (그대로 복사)</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
+                            <!-- infra -->
                             <tr>
-                                <td class="p-3 font-semibold"><i class="fab fa-aws text-orange-500 mr-2"></i>Lambda, EventBridge</td>
-                                <td class="p-3">각 폴더의 <code class="text-xs bg-slate-100 px-1 rounded">template.yaml</code>에 정의하면 배포 시 자동 반영됩니다.</td>
+                                <td class="p-3 font-bold text-indigo-600">infra/</td>
+                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap">PM (-2-)</span></td>
+                                <td class="p-3">
+                                    <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded-lg block whitespace-pre overflow-x-auto leading-relaxed">cd infra
+sam build
+sam deploy \
+  --stack-name inhatc-team2-infra \
+  --region us-east-1 \
+  --no-confirm-changeset \
+  --capabilities CAPABILITY_IAM \
+  --s3-bucket inhatc-team2-5-raw-data</code>
+                                </td>
                             </tr>
+                            <!-- backend -->
                             <tr>
-                                <td class="p-3 font-semibold"><i class="fas fa-database text-blue-500 mr-2"></i>S3, DynamoDB, CloudFront</td>
-                                <td class="p-3"><code class="text-xs bg-slate-100 px-1 rounded">infra/template.yaml</code> 내에 코드로 인프라를 정의하여 로컬에서 수동 배포합니다.</td>
+                                <td class="p-3 font-bold text-emerald-600">backend/</td>
+                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap">고원영 (-1-)</span></td>
+                                <td class="p-3">
+                                    <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded-lg block whitespace-pre overflow-x-auto leading-relaxed">cd backend
+sam build
+sam deploy \
+  --stack-name inhatc-team2-1-backend \
+  --region us-east-1 \
+  --no-confirm-changeset \
+  --capabilities CAPABILITY_IAM \
+  --s3-bucket inhatc-team2-5-raw-data</code>
+                                </td>
                             </tr>
+                            <!-- data -->
                             <tr>
-                                <td class="p-3 font-semibold"><i class="fas fa-table text-emerald-500 mr-2"></i>Athena (데이터 테이블)</td>
-                                <td class="p-3"><code class="text-xs bg-slate-100 px-1 rounded">infra/athena_ddl/</code> 폴더 안에 SQL 파일로 저장하여 관리합니다.</td>
+                                <td class="p-3 font-bold text-blue-600">data_pipeline/</td>
+                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap">김호건 (-5-)</span></td>
+                                <td class="p-3">
+                                    <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded-lg block whitespace-pre overflow-x-auto leading-relaxed">cd data_pipeline
+sam build
+sam deploy \
+  --stack-name inhatc-team2-5-pipeline \
+  --region us-east-1 \
+  --no-confirm-changeset \
+  --capabilities CAPABILITY_IAM \
+  --s3-bucket inhatc-team2-5-raw-data \
+  --parameter-overrides WeatherApiKey="본인기상청키입력"</code>
+                                </td>
                             </tr>
-                            <tr class="bg-slate-50">
-                                <td class="p-3 font-semibold text-slate-700"><i class="fas fa-robot text-purple-500 mr-2"></i>Amazon Bedrock (예외)</td>
-                                <td class="p-3 text-slate-700">Bedrock 모델 접근 권한(Model Access)은 코드(SAM)로 제어할 수 없습니다. <strong>이 부분만 예외적으로 콘솔에 들어가 수동으로 권한을 요청</strong>합니다.</td>
+                            <!-- real time -->
+                            <tr>
+                                <td class="p-3 font-bold text-sky-600">real_time/</td>
+                                <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded-full text-xs whitespace-nowrap">김호건 (-5-)</span></td>
+                                <td class="p-3">
+                                    <code class="text-xs bg-slate-800 text-emerald-400 p-3 rounded-lg block whitespace-pre overflow-x-auto leading-relaxed">cd real_time
+sam build
+sam deploy \
+  --stack-name inhatc-team2-5-realtime \
+  --region us-east-1 \
+  --no-confirm-changeset \
+  --capabilities CAPABILITY_IAM \
+  --s3-bucket inhatc-team2-5-raw-data \
+  --parameter-overrides WeatherApiKey="본인기상청키입력" AirApiKey="본인에어코리아키입력"</code>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -132,14 +145,14 @@
             </div>
         </div>
 
-        <!-- Warning Footer -->
-        <div class="bg-slate-800 text-white rounded-3xl p-6 text-center shadow-lg">
-            <h3 class="text-lg font-bold mb-2">💡 새로운 작업 프로세스 요약</h3>
-            <p class="text-sm text-slate-300">
-                1. 로컬 환경에서 코드 및 <code class="text-xs bg-slate-700 px-1 rounded">template.yaml</code> 수정<br>
-                2. <code class="text-xs bg-slate-700 px-1 rounded">feature/*</code> 브랜치 생성 후 GitHub에 Push<br>
-                3. PR 생성 후 <strong>팀원 승인을 받아 develop 브랜치로 병합 (자동 배포)</strong>
-            </p>
+        <!-- Caution -->
+        <div class="bg-slate-800 text-white rounded-3xl p-6 shadow-lg border border-slate-700">
+            <h3 class="text-lg font-bold mb-3 text-yellow-400"><i class="fas fa-hand-paper mr-2"></i> 절대 주의사항</h3>
+            <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+                <li><strong class="text-white">다른 팀원의 인프라 스택을 대신 배포하려 하지 마세요.</strong> 학교 계정 정책상 <code class="bg-slate-600 px-1 rounded">AccessDenied</code> 에러가 발생합니다.</li>
+                <li>환경변수 추가가 필요하다면 <code class="bg-slate-600 px-1 rounded">template.yaml</code> 수정 후 <strong>반드시 해당 팀원이 CloudShell에서 배포</strong>해야 반영됩니다.</li>
+                <li>AWS 콘솔(웹사이트)에서 마우스로 람다 설정을 변경하지 마세요. 다음 배포 시 덮어씌워져 초기화됩니다.</li>
+            </ul>
         </div>
 
         <div class="text-center pt-4 pb-8">
