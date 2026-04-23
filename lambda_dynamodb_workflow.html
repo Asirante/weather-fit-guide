@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Lambda + DynamoDB 개발 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        pre { background: #1e293b; color: #f8fafc; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.875rem; }
+        code { font-family: 'Fira Code', monospace; }
+        .keyword { color: #f472b6; }
+        .string { color: #34d399; }
+        .comment { color: #94a3b8; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="mb-12 border-b pb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">SAM + Docker + OIDC 개발 워크플로우</h1>
+            <p class="text-lg text-gray-600">액세스 키 없이 로컬 개발부터 클라우드 배포까지 완벽하게 처리하는 방법</p>
+        </header>
+
+        <!-- Summary Section -->
+        <section class="grid md:grid-cols-2 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-blue-600 mb-2">로컬 테스트 (Local)</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li>✅ <strong>Docker:</strong> DynamoDB Local 실행</li>
+                    <li>✅ <strong>SAM CLI:</strong> 로컬 네트워크 연동</li>
+                    <li>✅ <strong>권한:</strong> 별도의 AWS 키 필요 없음</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-green-600 mb-2">운영 배포 (GitHub Actions)</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li>✅ <strong>OIDC:</strong> 임시 보안 자격 증명 사용</li>
+                    <li>✅ <strong>SAM Deploy:</strong> 자동화된 배포 파이프라인</li>
+                    <li>✅ <strong>보안:</strong> 유출 위험이 있는 Key 미사용</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Step 1 -->
+        <section class="mb-10">
+            <div class="flex items-center mb-4">
+                <span class="bg-black text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">1</span>
+                <h2 class="text-2xl font-bold">도커 설정 (docker-compose.yml)</h2>
+            </div>
+            <p class="mb-4 text-gray-600">로컬에서 실행될 DynamoDB 컨테이너를 정의합니다. SAM 람다와 통신할 수 있도록 동일한 네트워크를 사용해야 합니다.</p>
+            <pre><code><span class="keyword">version</span>: <span class="string">'3.8'</span>
+<span class="keyword">services</span>:
+  <span class="keyword">dynamodb-local</span>:
+    <span class="keyword">image</span>: amazon/dynamodb-local
+    <span class="keyword">container_name</span>: dynamodb-local
+    <span class="keyword">ports</span>:
+      - <span class="string">"8000:8000"</span>
+    <span class="keyword">command</span>: <span class="string">"-jar DynamoDBLocal.jar -sharedDb"</span>
+    <span class="keyword">networks</span>:
+      - <span class="string">lambda-net</span>
+
+<span class="keyword">networks</span>:
+  <span class="keyword">lambda-net</span>:
+    <span class="keyword">driver</span>: bridge</code></pre>
+        </section>
+
+        <!-- Step 2 -->
+        <section class="mb-10">
+            <div class="flex items-center mb-4">
+                <span class="bg-black text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">2</span>
+                <h2 class="text-2xl font-bold">람다 코드 작성 (Node.js SDK v3)</h2>
+            </div>
+            <p class="mb-4 text-gray-600">로컬 환경인지 실제 람다 환경인지 판단하여 DynamoDB 엔드포인트를 자동으로 전환합니다.</p>
+            <pre><code><span class="keyword">import</span> { DynamoDBClient } <span class="keyword">from</span> <span class="string">"@aws-sdk/client-dynamodb"</span>;
+
+<span class="comment">// SAM 로컬 실행 시 AWS_SAM_LOCAL 환경 변수가 자동으로 세팅됨</span>
+<span class="keyword">const</span> isLocal = process.env.AWS_SAM_LOCAL === <span class="string">'true'</span>;
+
+<span class="keyword">const</span> client = <span class="keyword">new</span> DynamoDBClient({
+  region: <span class="string">"us-east-1"</span>,
+  <span class="comment">// 로컬일 경우 docker-compose의 서비스 이름을 엔드포인트로 설정</span>
+  endpoint: isLocal ? <span class="string">"http://dynamodb-local:8000"</span> : <span class="keyword">undefined</span>,
+});</code></pre>
+        </section>
+
+        <!-- Step 3 -->
+        <section class="mb-10">
+            <div class="flex items-center mb-4">
+                <span class="bg-black text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">3</span>
+                <h2 class="text-2xl font-bold">로컬 실행 명령어</h2>
+            </div>
+            <p class="mb-4 text-gray-600">터미널에서 아래 명령어를 순서대로 실행하여 로컬 테스트를 진행합니다.</p>
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <p class="font-mono text-sm mb-2 text-blue-700"># 1. 도커 네트워크 생성 및 DB 실행</p>
+                <p class="font-mono text-sm mb-4">docker-compose up -d</p>
+                
+                <p class="font-mono text-sm mb-2 text-blue-700"># 2. SAM 로컬 람다 호출 (네트워크 옵션 필수)</p>
+                <p class="font-mono text-sm">sam local invoke <span class="text-red-500">"FunctionName"</span> --docker-network <span class="text-red-500">lambda-net</span></p>
+            </div>
+        </section>
+
+        <!-- Step 4 -->
+        <section>
+            <div class="flex items-center mb-4">
+                <span class="bg-black text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">4</span>
+                <h2 class="text-2xl font-bold">배포 환경 (GitHub Actions)</h2>
+            </div>
+            <p class="mb-4 text-gray-600">이미 설정된 OIDC를 통해 `sam deploy`가 실행되므로, 별도의 키 없이 안전하게 배포됩니다.</p>
+            <pre><code><span class="comment"># .github/workflows/deploy.yml 중 일부</span>
+- <span class="keyword">name</span>: Configure AWS credentials
+  <span class="keyword">uses</span>: aws-actions/configure-aws-credentials@v4
+  <span class="keyword">with</span>:
+    <span class="keyword">role-to-assume</span>: arn:aws:iam::123456789:role/github-oidc-role
+    <span class="keyword">aws-region</span>: us-east-1
+
+- <span class="keyword">name</span>: SAM Deploy
+  <span class="keyword">run</span>: sam build && sam deploy</code></pre>
+        </section>
+
+        <div class="text-center pt-4 pb-8">
+            <a href="index.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> 문서 포털로 돌아가기
+            </a>
+        </div>
+        
+        <!-- Conclusion -->
+        <footer class="mt-16 bg-blue-50 p-8 rounded-2xl border border-blue-100">
+            <h3 class="text-xl font-bold text-blue-800 mb-2">💡 요약</h3>
+            <p class="text-blue-700 leading-relaxed">
+                액세스 키가 없어도 <strong>로컬은 Docker-Compose</strong>로 실제 DB를 흉내 내고, <strong>배포는 OIDC</strong>로 IAM Role을 위임받아 수행하면 됩니다. 
+                이 방식은 보안성이 가장 뛰어나며 실제 운영 환경과 코드 차이를 최소화하는 전문적인 개발 방식입니다.
+            </p>
+        </footer>
+    </div>
+
+</body>
+</html>
