@@ -13,6 +13,7 @@
         .warning-box { border-left: 4px solid #f59e0b; background-color: #fffbeb; }
         .info-box { border-left: 4px solid #3b82f6; background-color: #eff6ff; }
         .success-box { border-left: 4px solid #10b981; background-color: #ecfdf5; }
+        .danger-box { border-left: 4px solid #ef4444; background-color: #fef2f2; }
         code { 
             background-color: transparent; 
             padding: 0; 
@@ -50,9 +51,10 @@
                 </h2>
                 <nav class="space-y-2 text-sm">
                     <a href="#overview" class="block hover:text-blue-600 py-1 transition-colors font-semibold">1. 문서 개요</a>
+                    <a href="#sam-notice" class="block hover:text-red-600 py-1 transition-colors font-semibold text-red-600">⚠️ SAM CLI 사용 불가</a>
                     <a href="#github-repo" class="block hover:text-blue-600 py-1 transition-colors font-semibold">2. GitHub 레포지토리 구성</a>
                     <a href="#oidc-setup" class="block hover:text-blue-600 py-1 transition-colors font-semibold">3. GitHub Actions & OIDC 연동</a>
-                    <a href="#sam-collab" class="block hover:text-blue-600 py-1 transition-colors font-semibold">4. AWS SAM & 협업 가이드</a>
+                    <a href="#deploy-guide" class="block hover:text-blue-600 py-1 transition-colors font-semibold">4. 배포 가이드</a>
                 </nav>
             </div>
         </aside>
@@ -62,7 +64,7 @@
             
             <!-- Header -->
             <header class="text-center md:text-left mb-8">
-                <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mb-4">프로젝트 초기 세팅 가이드 v1.3</div>
+                <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mb-4">프로젝트 초기 세팅 가이드 v1.4</div>
                 <h1 class="text-4xl font-extrabold tracking-tight mb-2 text-gray-900">날씨 기반 생활 추천 서비스</h1>
                 <p class="text-gray-500 italic text-lg text-justify md:text-left">inhatc-team2 모노레포 자동화 배포 및 협업 가이드라인</p>
                 <div class="mt-6 flex flex-wrap gap-4 text-sm text-gray-600 justify-center md:justify-start">
@@ -95,6 +97,41 @@
                 </div>
             </section>
 
+            <!-- SAM 사용 불가 경고 -->
+            <section id="sam-notice" class="bg-white p-8 rounded-2xl shadow-sm border-2 border-red-200 transition-all hover:shadow-md">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-4 text-red-700">
+                    <i class="fas fa-ban mr-2"></i> ⛔ SAM CLI 사용 불가 (필독)
+                </h2>
+                <div class="p-4 danger-box rounded-lg mb-6">
+                    <p class="font-bold text-red-900 text-sm mb-2">학교 AWS 계정 환경 제약</p>
+                    <p class="text-sm text-red-800 leading-relaxed">
+                        학교 계정은 <strong>비용관리 태그(Cost Allocation Tag)</strong>로 리소스 CRUD 권한을 제어합니다.
+                        Lambda 생성 직후 태그가 붙기 전, SAM이 후속 작업을 시도하면 <strong>AccessDeniedException</strong>이 발생합니다.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                        <h3 class="font-bold text-red-700 text-sm mb-2">❌ 사용 금지</h3>
+                        <pre class="text-xs bg-red-900 text-red-300 p-3 rounded"><code><span class="line-through">sam build</span>
+<span class="line-through">sam deploy --guided</span>
+<span class="line-through">sam deploy --config-env dev</span>
+<span class="line-through">sam local invoke ...</span>
+<span class="line-through">sam local start-api</span></code></pre>
+                    </div>
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                        <h3 class="font-bold text-green-700 text-sm mb-2">✅ 대신 사용</h3>
+                        <pre class="text-xs bg-green-900 text-green-300 p-3 rounded"><code># 코드 배포: AWS CLI
+zip -r deploy.zip .
+aws lambda update-function-code \
+  --function-name &lt;함수명&gt; \
+  --zip-file fileb://deploy.zip
+
+# 인프라 설정: AWS 콘솔에서 직접</code></pre>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-3">※ <code>template.yaml</code>, <code>samconfig.toml</code> 파일은 인프라 구조 파악을 위한 참고용으로 보존합니다.</p>
+            </section>
+
             <!-- 2. GitHub 레포지토리 구성 -->
             <section id="github-repo" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
                 <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-4">
@@ -107,14 +144,14 @@
                 <pre><code>project-root/
 ├── .github/workflows/          # GitHub Actions 워크플로 (FE/BE/DATA/REAL-TIME)
 │   ├── deploy-frontend.yml     # frontend/** 변경 시 S3 배포
-│   ├── deploy-backend.yml      # backend/** 변경 시 Lambda 업데이트
-│   ├── deploy-data-pipeline.yml  # data_pipeline/** 변경 시 Lambda 업데이트
-│   └── deploy-real-time.yml    # real_time/** 변경 시 Lambda 업데이트
+│   ├── deploy-backend.yml      # backend/** 변경 시 Lambda 코드 업데이트
+│   ├── deploy-data-pipeline.yml  # data_pipeline/** 변경 시 Lambda 코드 업데이트
+│   └── deploy-real-time.yml    # real_time/** 변경 시 Lambda 코드 업데이트
 ├── frontend/                   # Vue.js 3 + Vite
 ├── backend/                    # FastAPI + Mangum (추천 API)
 ├── data_pipeline/              # EventBridge + Lambda (정기 수집 + 배치 추론)
 ├── real_time/                  # EventBridge + Lambda (30분 실시간 수집)
-├── infra/                      # SAM template.yaml (공통 인프라 정의)
+├── infra/                      # 인프라 참고용 template.yaml (직접 배포 불가)
 └── README.md</code></pre>
             </section>
 
@@ -164,10 +201,10 @@
                 </div>
             </section>
 
-            <!-- 4. AWS SAM & 협업 가이드 -->
-            <section id="sam-collab" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+            <!-- 4. 배포 가이드 -->
+            <section id="deploy-guide" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
                 <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-4">
-                    <span class="text-blue-600">04.</span> AWS SAM & 협업 가이드
+                    <span class="text-blue-600">04.</span> 배포 가이드 (AWS CLI 직접 방식)
                 </h2>
                 
                 <div class="space-y-10">
@@ -187,61 +224,41 @@
                         </ul>
                     </div>
 
-                    <!-- SAM 명령어 -->
+                    <!-- 배포 명령어 -->
                     <div>
                         <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-800">
-                            <i class="fas fa-terminal text-blue-500"></i> AWS SAM 핵심 워크플로
+                            <i class="fas fa-terminal text-blue-500"></i> 실제 배포 명령어 (AWS CLI)
                         </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="p-4 border border-blue-100 bg-blue-50/30 rounded-xl">
-                                <h4 class="font-bold text-sm text-blue-800 mb-2">로컬 빌드 및 테스트</h4>
-                                <code class="block text-xs py-1">sam build</code>
-                                <code class="block text-xs py-1">sam local start-api</code>
-                            </div>
-                            <div class="p-4 border border-green-100 bg-green-50/30 rounded-xl">
-                                <h4 class="font-bold text-sm text-green-800 mb-2">배포 및 상태 확인</h4>
-                                <code class="block text-xs py-1">sam deploy --guided --region us-east-1</code>
-                                <code class="block text-xs py-1">sam logs -n inhatc-team2-1-recommendAPI</code>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 배포 액션 플랜 -->
-                    <div class="info-box p-8 rounded-xl shadow-sm">
-                        <p class="font-bold text-blue-900 mb-6 flex items-center gap-2 text-lg">
-                            <i class="fas fa-paper-plane"></i> 실제 배포 명령어 (YAML 반영용)
-                        </p>
-                        <div class="space-y-8">
-                            <!-- Frontend Section -->
-                            <div>
-                                <h5 class="text-sm font-bold text-blue-700 uppercase mb-3 flex items-center gap-2">
-                                    <i class="fas fa-desktop"></i> Frontend (S3)
-                                </h5>
-                                <pre class="text-sm md:text-base p-5"><code>aws s3 sync frontend/dist/ s3://inhatc-team2-3-frontend --delete</code></pre>
-                            </div>
-                            
-                            <!-- Backend Section -->
-                            <div>
-                                <h5 class="text-sm font-bold text-purple-700 uppercase mb-3 flex items-center gap-2">
-                                    <i class="fas fa-server"></i> Backend / Data Pipeline / Real-time (Lambda)
-                                </h5>
-                                <pre class="text-sm md:text-base p-5"><code># 백엔드
-cd backend && zip -r ../deploy.zip .
+                        <div class="info-box p-6 rounded-xl shadow-sm">
+                            <p class="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                                <i class="fas fa-info-circle"></i> GitHub Actions가 Push 시 자동 실행합니다. 수동 배포 시에만 아래 명령어를 직접 입력하세요.
+                            </p>
+                            <div class="space-y-6">
+                                <div>
+                                    <h5 class="text-sm font-bold text-blue-700 uppercase mb-2"><i class="fas fa-desktop mr-1"></i> Frontend (S3)</h5>
+                                    <pre class="text-sm"><code>aws s3 sync frontend/dist/ s3://inhatc-team2-3-frontend --delete</code></pre>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-purple-700 uppercase mb-2"><i class="fas fa-server mr-1"></i> Backend</h5>
+                                    <pre class="text-sm"><code>cd backend && zip -r ../deploy.zip .
 aws lambda update-function-code \
   --function-name inhatc-team2-1-recommendAPI \
-  --zip-file fileb://../deploy.zip
-
-# 데이터 파이프라인
-cd data_pipeline && zip -r ../deploy.zip .
+  --zip-file fileb://../deploy.zip</code></pre>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-indigo-700 uppercase mb-2"><i class="fas fa-database mr-1"></i> Data Pipeline</h5>
+                                    <pre class="text-sm"><code>cd data_pipeline && zip -r ../deploy.zip .
 aws lambda update-function-code \
   --function-name inhatc-team2-5-dataAPI \
-  --zip-file fileb://../deploy.zip
-
-# 실시간 파이프라인
-cd real_time && zip -r ../deploy.zip .
+  --zip-file fileb://../deploy.zip</code></pre>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-teal-700 uppercase mb-2"><i class="fas fa-bolt mr-1"></i> Real-time Pipeline</h5>
+                                    <pre class="text-sm"><code>cd real_time && zip -r ../deploy.zip .
 aws lambda update-function-code \
   --function-name inhatc-team2-5-real-time-dataAPI \
   --zip-file fileb://../deploy.zip</code></pre>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -251,11 +268,11 @@ aws lambda update-function-code \
         </main>
     </div>
 
-        <div class="text-center pt-4 pb-8">
-            <a href="index.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i> 문서 포털로 돌아가기
-            </a>
-        </div>
+    <div class="text-center pt-4 pb-8">
+        <a href="index.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i> 문서 포털로 돌아가기
+        </a>
+    </div>
         
     <footer class="mt-20 py-12 border-t border-gray-200 text-center bg-white shadow-inner">
         <div class="max-w-6xl mx-auto px-4">
