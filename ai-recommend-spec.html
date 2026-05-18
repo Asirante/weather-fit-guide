@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 복장 추천 파이프라인 설계 스펙</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .code-block { font-family: 'Menlo', 'Monaco', 'Consolas', monospace; }
+        .tab-btn.active { background-color: #4f46e5; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* 코드 블록 래퍼 */
+        .code-wrap {
+            position: relative;
+        }
+        .code-wrap pre {
+            color: #e2e8f0;
+        }
+        .code-wrap pre.no-dark {
+            color: #334155;
+        }
+        .code-wrap pre .text-red-300    { color: #fca5a5; }
+        .code-wrap pre .text-green-300  { color: #86efac; }
+        .code-wrap pre .text-slate-400  { color: #94a3b8; }
+        .code-wrap pre .text-slate-300  { color: #cbd5e1; }
+
+        /* 복사 버튼 */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-family: 'Pretendard', sans-serif;
+            font-weight: 600;
+            background: rgba(255,255,255,0.08);
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s, background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+        .code-wrap:hover .copy-btn { opacity: 1; }
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.18);
+            color: #e2e8f0;
+        }
+        .copy-btn.copied {
+            background: rgba(134, 239, 172, 0.15);
+            color: #86efac;
+            border-color: rgba(134, 239, 172, 0.3);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased p-4 md:p-8">
+<div class="max-w-6xl mx-auto space-y-10">
+
+    <!-- Header -->
+    <header class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+        <div class="flex items-start justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">ai_pipeline/</span>
+                    <span class="bg-slate-100 text-slate-500 text-xs px-3 py-1 rounded-full">v1.0 · 2026-05-18</span>
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-900 mb-2">🤖 AI 복장 추천 파이프라인 설계 스펙</h1>
+                <p class="text-slate-500">Bedrock Haiku 3.5 배치 선 생성 + DynamoDB 캐시 조회 구조</p>
+            </div>
+        </div>
+        <div class="mt-6 grid grid-cols-3 gap-4">
+            <div class="bg-indigo-50 rounded-2xl p-4 text-center">
+                <div class="text-2xl font-extrabold text-indigo-600">27,000</div>
+                <div class="text-xs text-slate-500 mt-1">전체 패턴 수</div>
+            </div>
+            <div class="bg-purple-50 rounded-2xl p-4 text-center">
+                <div class="text-2xl font-extrabold text-purple-600">7</div>
+                <div class="text-xs text-slate-500 mt-1">패턴 변수 수</div>
+            </div>
+            <div class="bg-emerald-50 rounded-2xl p-4 text-center">
+                <div class="text-2xl font-extrabold text-emerald-600">1회</div>
+                <div class="text-xs text-slate-500 mt-1">배치 실행 (이후 재실행 불필요)</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 아키텍처 개요 -->
+    <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-slate-800 p-5">
+            <h2 class="text-xl font-bold text-white">1. 전체 흐름</h2>
+        </div>
+        <div class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 배치 -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded">배치 (1회 실행)</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                            <span class="w-7 h-7 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0">1</span>
+                            <span class="text-sm text-slate-700"><code class="code-block bg-slate-200 px-1 rounded text-xs">ai_pipeline/batch_generate.py</code> 실행</span>
+                        </div>
+                        <div class="flex justify-center text-slate-300 text-lg">↓</div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                            <span class="w-7 h-7 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0">2</span>
+                            <span class="text-sm text-slate-700">27,000개 패턴 순회 → DynamoDB 없는 것만 추출</span>
+                        </div>
+                        <div class="flex justify-center text-slate-300 text-lg">↓</div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                            <span class="w-7 h-7 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0">3</span>
+                            <span class="text-sm text-slate-700">Bedrock Haiku 3.5 호출 → 추천 JSON 생성</span>
+                        </div>
+                        <div class="flex justify-center text-slate-300 text-lg">↓</div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                            <span class="w-7 h-7 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0">4</span>
+                            <span class="text-sm text-slate-700"><code class="code-block bg-slate-200 px-1 rounded text-xs">recommend-cache</code> DynamoDB에 저장</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 실시간 -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded">실시간 (매 요청)</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                            <span class="w-7 h-7 bg-emerald-500 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0">1</span>
+                            <span class="text-sm text-slate-700">S3 CSV + air-cache에서 6시간 기상 데이터 수집</span>
+                        </div>
+                        <div class="flex justify-center text-slate-300 text-lg">↓</div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                            <span class="w-7 h-7 bg-emerald-500 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0">2</span>
+                            <span class="text-sm text-slate-700">패턴키 추출 함수 호출 → SK 문자열 생성</span>
+                        </div>
+                        <div class="flex justify-center text-slate-300 text-lg">↓</div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                            <span class="w-7 h-7 bg-emerald-500 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0">3</span>
+                            <span class="text-sm text-slate-700">DynamoDB <code class="code-block bg-slate-200 px-1 rounded text-xs">get_item</code> 조회</span>
+                        </div>
+                        <div class="flex justify-center text-slate-300 text-lg">↓</div>
+                        <div class="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                            <span class="w-7 h-7 bg-emerald-500 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0">4</span>
+                            <span class="text-sm text-slate-700"><strong>HIT</strong>: AI 추천 즉시 반환 / <strong>MISS</strong>: 룰베이스 폴백</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
+                        ⚡ 실시간에서 Bedrock 호출 없음. AI는 배치 전처리 도구로만 사용.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 역할별 탭 -->
+    <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-indigo-50 border-b border-slate-200 p-5">
+            <h2 class="text-xl font-bold text-indigo-800">2. 역할별 구현 가이드</h2>
+        </div>
+        <div class="p-6">
+            <div class="flex gap-2 mb-6 flex-wrap">
+                <button onclick="showTab('ai')" class="tab-btn active text-sm font-bold px-4 py-2 rounded-xl border border-slate-200 transition-colors" id="btn-ai">🤖 AI 엔지니어</button>
+                <button onclick="showTab('be')" class="tab-btn text-sm font-bold px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-colors" id="btn-be">⚙️ 백엔드</button>
+                <button onclick="showTab('fe')" class="tab-btn text-sm font-bold px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-colors" id="btn-fe">🖥️ 프론트엔드</button>
+            </div>
+
+            <!-- AI 엔지니어 탭 -->
+            <div id="tab-ai" class="tab-content active space-y-6">
+                <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                    <h3 class="font-bold text-indigo-800 mb-2">📁 신규 폴더 생성</h3>
+                    <pre class="code-block text-xs text-slate-700 bg-white rounded-xl p-4 border border-slate-200 overflow-x-auto no-dark">ai_pipeline/
+├── batch_generate.py    ← 신규 작성 (메인 배치 스크립트)
+├── pattern_domains.py   ← 변수 도메인 정의
+├── prompts.py           ← Bedrock 프롬프트 관리
+└── requirements.txt</pre>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">패턴키 추출 함수</h3>
+                    <pre class="code-block text-xs text-slate-700 bg-slate-900 rounded-xl p-4 overflow-x-auto text-green-300">
+<span class="text-slate-400"># pattern_domains.py</span>
+
+TEMP_ZONES  = ["35over","30-34","25-29","20-24","15-19","10-14","5-9","0-4","-10--1","under-11"]
+DIFF_LEVELS = ["none","small","normal","large","xlarge"]
+RAIN_LEVELS = ["none","drizzle","light","moderate","heavy"]
+PM_GRADES   = ["good","normal","bad","very_bad"]
+WIND_LEVELS = ["calm","moderate","strong"]
+UV_LEVELS   = ["low","normal","high"]
+PTY_TYPES   = ["none","rain","snow"]
+
+<span class="text-slate-400"># 10×5×5×4×3×3×3 = 27,000가지</span>
+
+def get_temp_zone(temp):
+    if temp >= 35: return "35over"
+    elif temp >= 30: return "30-34"
+    elif temp >= 25: return "25-29"
+    elif temp >= 20: return "20-24"
+    elif temp >= 15: return "15-19"
+    elif temp >= 10: return "10-14"
+    elif temp >= 5:  return "5-9"
+    elif temp >= 0:  return "0-4"
+    elif temp >= -10: return "-10--1"
+    else: return "under-11"
+
+def get_diff_level(diff):
+    if diff <= 2:   return "none"
+    elif diff <= 5: return "small"
+    elif diff <= 8: return "normal"
+    elif diff <= 12: return "large"
+    else: return "xlarge"
+
+def get_rain_level(rains):
+    <span class="text-slate-400"># RN1: "강수없음","1mm 미만","1~2mm","5~10mm"</span>
+    for r in rains:
+        if r in ["강수없음","0"]: continue
+        if "미만" in r: return "drizzle"
+        val = int(r.split("~")[0].replace("mm","").strip())
+        if val >= 15: return "heavy"
+        elif val >= 3: return "moderate"
+        else: return "light"
+    return "none"
+
+def get_pm_grade(pm10, pm25):
+    if pm25 in ["3","4"] or pm10 == "4": return "very_bad"
+    elif pm10 == "3": return "bad"
+    elif pm10 == "2": return "normal"
+    else: return "good"
+
+def get_wind_level(wsd_max):
+    if wsd_max >= 3: return "strong"
+    elif wsd_max >= 2: return "moderate"
+    else: return "calm"
+
+def get_uv_level(uv_max):
+    if uv_max >= 6: return "high"
+    elif uv_max >= 3: return "normal"
+    else: return "low"
+
+def get_pty_type(ptys):
+    if "3" in ptys: return "snow"  <span class="text-slate-400"># snow 우선</span>
+    if any(p in ["1","2","4"] for p in ptys): return "rain"
+    return "none"
+
+def build_sk(temp_zone, diff_level, rain_level,
+             pm_grade, wind_level, uv_level, pty_type):
+    return (f"temp:{temp_zone}|diff:{diff_level}|rain:{rain_level}"
+            f"|pm:{pm_grade}|wind:{wind_level}|uv:{uv_level}|pty:{pty_type}")
+</pre>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">Bedrock 프롬프트</h3>
+                    <pre class="code-block text-xs text-slate-700 bg-slate-900 rounded-xl p-4 overflow-x-auto text-green-300">
+<span class="text-slate-400"># prompts.py</span>
+
+SYSTEM_PROMPT = """
+너는 날씨 기반 옷차림 추천 AI야.
+입력받은 기상 패턴 코드를 분석해서 아래 JSON 형식으로만 응답해.
+다른 말은 일절 하지 마. 마크다운 코드블록도 쓰지 마.
+
+선택 가능한 값:
+- top: ["민소매","반팔","린넨 소재","얇은 셔츠","긴팔 티셔츠",
+        "가디건","후드티","맨투맨","야상","재킷","니트",
+        "코트","가죽재킷","두꺼운 니트","패딩","두꺼운 롱코트",
+        "방한복","기모 이너"] 중 1~2개
+- bottom: ["반바지","짧은 치마","린넨 소재","면바지","청바지",
+           "두꺼운 긴바지","기모바지","방한복"] 중 1개
+- mask: "마스크 선택" | "kf80 권장" | "kf94 필수"
+- pack: "불필요" | "접이식 우산" | "장우산·레인부츠"
+- acc: [] | ["선크림"] | ["선크림","모자"] | ["장갑"] | ["목도리"] 등
+
+출력 형식 (이것만):
+{"top":[...],"bottom":[...],"mask":"...","pack":"...","acc":[...],"reason":"..."}
+"""
+
+def make_user_message(sk: str) -> str:
+    parts = dict(item.split(":") for item in sk.split("|"))
+    return f"""기상 패턴:
+- 기온: {parts['temp']}
+- 일교차: {parts['diff']}
+- 강수량: {parts['rain']}
+- 미세먼지: {parts['pm']}
+- 풍속: {parts['wind']}
+- 자외선: {parts['uv']}
+- 강수형태: {parts['pty']}"""
+</pre>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">배치 스크립트 구조</h3>
+                    <pre class="code-block text-xs text-slate-700 bg-slate-900 rounded-xl p-4 overflow-x-auto text-green-300">
+<span class="text-slate-400"># batch_generate.py</span>
+import itertools, json, boto3, time
+from pattern_domains import *
+from prompts import SYSTEM_PROMPT, make_user_message
+
+TABLE  = "inhatc-team2-1-recommend-cache"
+MODEL  = "anthropic.claude-haiku-3-5"
+PK_VAL = "weather_pattern"
+VERSION = "v1"
+
+dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
+bedrock  = boto3.client("bedrock-runtime", region_name="us-east-1")
+table    = dynamodb.Table(TABLE)
+
+def all_pattern_sks():
+    for combo in itertools.product(
+        TEMP_ZONES, DIFF_LEVELS, RAIN_LEVELS,
+        PM_GRADES, WIND_LEVELS, UV_LEVELS, PTY_TYPES
+    ):
+        yield build_sk(*combo)
+
+def already_exists(sk):
+    res = table.get_item(Key={"PK": PK_VAL, "SK": sk})
+    return "Item" in res
+
+def call_bedrock(sk):
+    body = json.dumps({
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 300,
+        "system": SYSTEM_PROMPT,
+        "messages": [{"role":"user","content": make_user_message(sk)}]
+    })
+    res  = bedrock.invoke_model(modelId=MODEL, body=body)
+    text = json.loads(res["body"].read())["content"][0]["text"]
+    return json.loads(text)
+
+def save(sk, data):
+    table.put_item(Item={
+        "PK": PK_VAL, "SK": sk,
+        "top":    data["top"],
+        "bottom": data["bottom"],
+        "mask":   data["mask"],
+        "pack":   data["pack"],
+        "acc":    data.get("acc", []),
+        "reason": data.get("reason", ""),
+        "model":  MODEL,
+        "version": VERSION
+    })
+
+<span class="text-slate-400"># 실행</span>
+total = skipped = saved = errors = 0
+for sk in all_pattern_sks():
+    total += 1
+    if already_exists(sk):
+        skipped += 1
+        continue
+    try:
+        data = call_bedrock(sk)
+        save(sk, data)
+        saved += 1
+        time.sleep(0.1)  <span class="text-slate-400"># 과금 완화</span>
+    except Exception as e:
+        print(f"ERROR {sk}: {e}")
+        errors += 1
+
+print(f"완료: 전체{total} 스킵{skipped} 저장{saved} 오류{errors}")
+</pre>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+                        <h4 class="font-bold text-amber-800 text-sm mb-2">💰 비용 추정</h4>
+                        <p class="text-xs text-amber-700">27,000개 × 입력 ~300토큰 + 출력 ~150토큰<br>→ <strong>총 수 달러 수준 (1회성)</strong></p>
+                    </div>
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+                        <h4 class="font-bold text-blue-800 text-sm mb-2">🔁 재실행 조건</h4>
+                        <p class="text-xs text-blue-700">프롬프트 개선 시 <code class="code-block">version="v1"</code> 스캔 후 재호출, <code class="code-block">version="v2"</code>로 덮어쓰기</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 백엔드 탭 -->
+            <div id="tab-be" class="tab-content space-y-6">
+                <div class="p-4 bg-green-50 rounded-2xl border border-green-100">
+                    <h3 class="font-bold text-green-800 mb-1">변경 파일</h3>
+                    <p class="text-sm text-green-700"><code class="code-block">backend/lambda_function.py</code> — <code class="code-block">/recommend</code> 경로 내부만 수정</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">변경 전 → 후 비교</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-xs font-bold text-red-600 mb-2">❌ 기존 (룰베이스 × 6회)</div>
+                            <pre class="code-block text-xs bg-slate-900 rounded-xl p-4 text-red-300 overflow-x-auto">for i in range(loop_count):
+    temp = int(weather_data[i])
+    if temp >= 28:
+        top = "민소매, 반팔 린넨소재"
+        bottom = "반바지..."
+    elif temp >= 23:
+        ...
+    recommend_list.append({...})</pre>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-emerald-600 mb-2">✅ 변경 후 (DynamoDB 단일 조회)</div>
+                            <pre class="code-block text-xs bg-slate-900 rounded-xl p-4 text-green-300 overflow-x-auto">sk = extract_pattern_key(
+    weather_data, rain_data,
+    wsd_data, pty_data,
+    pm10, pm25, uv_data
+)
+res = recommend_table.get_item(
+    Key={"PK":"weather_pattern","SK":sk}
+)
+if "Item" in res:
+    return HIT_response(res["Item"])
+else:
+    return fallback_ruleset()</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">추가로 수집 필요한 S3 카테고리</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-50 text-slate-500">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-semibold">카테고리</th>
+                                    <th class="px-4 py-3 text-left font-semibold">현재 상태</th>
+                                    <th class="px-4 py-3 text-left font-semibold">필요 액션</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-4 py-3 font-mono text-purple-600">T1H</td><td class="px-4 py-3"><span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded">수집 중</span></td><td class="px-4 py-3 text-xs text-slate-500">변경 없음</td></tr>
+                                <tr><td class="px-4 py-3 font-mono text-purple-600">RN1</td><td class="px-4 py-3"><span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded">수집 중</span></td><td class="px-4 py-3 text-xs text-slate-500">변경 없음</td></tr>
+                                <tr><td class="px-4 py-3 font-mono text-purple-600">WSD</td><td class="px-4 py-3"><span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded">확인 필요</span></td><td class="px-4 py-3 text-xs text-slate-500"><code class="code-block bg-slate-100 px-1 rounded">get_temperature_data(rows, region, "WSD")</code> 테스트</td></tr>
+                                <tr><td class="px-4 py-3 font-mono text-purple-600">PTY</td><td class="px-4 py-3"><span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded">수집 중</span></td><td class="px-4 py-3 text-xs text-slate-500">변경 없음</td></tr>
+                                <tr><td class="px-4 py-3 font-mono text-purple-600">uv_index</td><td class="px-4 py-3"><span class="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded">S3에만 저장</span></td><td class="px-4 py-3 text-xs text-slate-500">데이터팀과 조회 방법 협의 필요</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">응답 구조 변경</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-xs font-bold text-red-500 mb-2">기존 응답 (배열 6개)</div>
+                            <pre class="code-block text-xs bg-slate-900 rounded-xl p-4 text-red-300 overflow-x-auto">[
+  {"top":"민소매, 반팔 린넨소재",
+   "bottom":"반바지, 짧은 치마",
+   "mask":"마스크 선택",
+   "pack":"불필요"},
+  {"top":"반팔, 얇은 셔츠", ...},
+  ... (6개)
+]</pre>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-emerald-500 mb-2">신규 응답 (단일 객체)</div>
+                            <pre class="code-block text-xs bg-slate-900 rounded-xl p-4 text-green-300 overflow-x-auto">{
+  "top":    ["반팔", "가디건"],
+  "bottom": ["청바지"],
+  "mask":   "마스크 선택",
+  "pack":   "접이식 우산",
+  "acc":    ["선크림"],
+  "reason": "낮엔 덥지만 저녁 급격히 쌀쌀,
+             오후 잠깐 비 예상.",
+  "cache":  "HIT"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 프론트엔드 탭 -->
+            <div id="tab-fe" class="tab-content space-y-6">
+                <div class="p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                    <h3 class="font-bold text-orange-800 mb-1">변경 파일</h3>
+                    <p class="text-sm text-orange-700"><code class="code-block">frontend/src/stores/useWeather.js</code> — 추천 데이터 파싱 부분</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">useWeather.js 수정 포인트</h3>
+                    <pre class="code-block text-xs bg-slate-900 rounded-xl p-4 text-green-300 overflow-x-auto">
+<span class="text-slate-400">// 기존: recommendList[index] 시간별 매핑</span>
+<span class="text-red-400">hourlyOutfitData.value = tempArray.map((_, index) => {
+    const outfit = recommendList[index] ?? firstOutfit;
+    return { top: outfit.top, bottom: outfit.bottom, ... };
+});</span>
+
+<span class="text-slate-400">// 변경 후: 단일 추천 객체를 모든 시간대에 동일 적용</span>
+<span class="text-green-300">const outfit = recommendData;  // 단일 객체
+hourlyOutfitData.value = tempArray.map(() => ({
+    top:    Array.isArray(outfit.top)
+              ? outfit.top.join(", ")
+              : outfit.top ?? "데이터 없음",
+    bottom: Array.isArray(outfit.bottom)
+              ? outfit.bottom.join(", ")
+              : outfit.bottom ?? "데이터 없음",
+    mask:   outfit.mask  ?? "선택",
+    pack:   outfit.pack  ?? "불필요",
+    acc:    outfit.acc   ?? [],
+}));</span>
+</pre>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">신규 필드 표시 가이드</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-50 text-slate-500">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-semibold">필드</th>
+                                    <th class="px-4 py-3 text-left font-semibold">표시 위치</th>
+                                    <th class="px-4 py-3 text-left font-semibold">비고</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-4 py-3 font-mono text-indigo-600">acc</td><td class="px-4 py-3 text-xs">OOTD 카드 "추천 소지품" 항목에 추가</td><td class="px-4 py-3 text-xs text-slate-400">빈 배열이면 "없음" 표시</td></tr>
+                                <tr><td class="px-4 py-3 font-mono text-indigo-600">reason</td><td class="px-4 py-3 text-xs">OOTD 섹션 하단 추천 근거 문구</td><td class="px-4 py-3 text-xs text-slate-400">한 줄 텍스트</td></tr>
+                                <tr><td class="px-4 py-3 font-mono text-indigo-600">cache</td><td class="px-4 py-3 text-xs">UI 미표시 (개발자 콘솔 로그용)</td><td class="px-4 py-3 text-xs text-slate-400">"HIT" / "MISS"</td></tr>
+                                <tr><td class="px-4 py-3 font-mono text-indigo-600">top / bottom</td><td class="px-4 py-3 text-xs">기존 위치 유지, Array → join(", ")</td><td class="px-4 py-3 text-xs text-slate-400">기존 string → 배열로 변경됨 주의</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 패턴키 도메인 테이블 -->
+    <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-purple-50 border-b border-slate-200 p-5">
+            <h2 class="text-xl font-bold text-purple-800">3. 패턴키 변수 도메인 (27,000가지)</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                    <tr>
+                        <th class="px-6 py-4 font-semibold">변수</th>
+                        <th class="px-6 py-4 font-semibold">단계</th>
+                        <th class="px-6 py-4 font-semibold">도메인 값</th>
+                        <th class="px-6 py-4 font-semibold">기준 필드</th>
+                        <th class="px-6 py-4 font-semibold">집계 방법</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-indigo-600">temp</td><td class="px-6 py-3 font-bold">10</td><td class="px-6 py-3 text-xs text-slate-600">35over, 30-34, 25-29, 20-24, 15-19, 10-14, 5-9, 0-4, -10--1, under-11</td><td class="px-6 py-3 font-mono text-xs">T1H</td><td class="px-6 py-3 text-xs">6시간 최솟값</td></tr>
+                    <tr class="hover:bg-slate-50 bg-slate-50/30"><td class="px-6 py-3 font-mono font-bold text-indigo-600">diff</td><td class="px-6 py-3 font-bold">5</td><td class="px-6 py-3 text-xs text-slate-600">none(0-2°), small(3-5°), normal(6-8°), large(9-12°), xlarge(13°+)</td><td class="px-6 py-3 font-mono text-xs">T1H</td><td class="px-6 py-3 text-xs">max - min</td></tr>
+                    <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-indigo-600">rain</td><td class="px-6 py-3 font-bold">5</td><td class="px-6 py-3 text-xs text-slate-600">none, drizzle(1mm미만), light(1-2mm), moderate(3-14mm), heavy(15mm+)</td><td class="px-6 py-3 font-mono text-xs">RN1</td><td class="px-6 py-3 text-xs">6시간 최댓값</td></tr>
+                    <tr class="hover:bg-slate-50 bg-slate-50/30"><td class="px-6 py-3 font-mono font-bold text-indigo-600">pm</td><td class="px-6 py-3 font-bold">4</td><td class="px-6 py-3 text-xs text-slate-600">good, normal, bad(kf80), very_bad(kf94) — pm25 우선</td><td class="px-6 py-3 font-mono text-xs">pm10Grade, pm25Grade</td><td class="px-6 py-3 text-xs">pm25 우선</td></tr>
+                    <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-indigo-600">wind</td><td class="px-6 py-3 font-bold">3</td><td class="px-6 py-3 text-xs text-slate-600">calm(WSD 1), moderate(WSD 2), strong(WSD 3)</td><td class="px-6 py-3 font-mono text-xs">WSD</td><td class="px-6 py-3 text-xs">6시간 최댓값</td></tr>
+                    <tr class="hover:bg-slate-50 bg-slate-50/30"><td class="px-6 py-3 font-mono font-bold text-indigo-600">uv</td><td class="px-6 py-3 font-bold">3</td><td class="px-6 py-3 text-xs text-slate-600">low(0-2), normal(3-5), high(6+)</td><td class="px-6 py-3 font-mono text-xs">uv_index h0~h5</td><td class="px-6 py-3 text-xs">6시간 최댓값</td></tr>
+                    <tr class="hover:bg-slate-50"><td class="px-6 py-3 font-mono font-bold text-indigo-600">pty</td><td class="px-6 py-3 font-bold">3</td><td class="px-6 py-3 text-xs text-slate-600">none, rain(PTY 1,2,4), snow(PTY 3) — snow 우선</td><td class="px-6 py-3 font-mono text-xs">PTY</td><td class="px-6 py-3 text-xs">snow 우선</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 bg-indigo-50 text-center">
+            <span class="font-mono font-bold text-indigo-700">10 × 5 × 5 × 4 × 3 × 3 × 3 = 27,000가지</span>
+        </div>
+    </section>
+
+    <!-- DynamoDB 스키마 -->
+    <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-teal-50 border-b border-slate-200 p-5">
+            <h2 class="text-xl font-bold text-teal-800">4. DynamoDB 스키마 (<code class="code-block font-mono">inhatc-team2-1-recommend-cache</code>)</h2>
+        </div>
+        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="font-bold text-slate-700 mb-3">키 구조</h3>
+                <table class="w-full text-sm border border-slate-200 rounded-xl overflow-hidden">
+                    <thead class="bg-slate-50"><tr><th class="px-4 py-2 text-left">키</th><th class="px-4 py-2 text-left">타입</th><th class="px-4 py-2 text-left">값</th></tr></thead>
+                    <tbody>
+                        <tr class="border-t border-slate-100"><td class="px-4 py-2 font-mono text-sm">PK</td><td class="px-4 py-2 text-xs">String</td><td class="px-4 py-2 font-mono text-xs text-indigo-600">"weather_pattern"</td></tr>
+                        <tr class="border-t border-slate-100 bg-slate-50"><td class="px-4 py-2 font-mono text-sm">SK</td><td class="px-4 py-2 text-xs">String</td><td class="px-4 py-2 font-mono text-xs text-indigo-600">"temp:25-29|diff:normal|..."</td></tr>
+                    </tbody>
+                </table>
+                <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
+                    ⚠️ 현재 테이블은 PK 단독 구조. <strong>SK 추가를 위해 인프라팀에 테이블 재생성 요청 필요.</strong>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-700 mb-3">아이템 구조 예시</h3>
+                <pre class="code-block text-xs bg-slate-900 rounded-xl p-4 text-green-300 overflow-x-auto">{
+  "PK": "weather_pattern",
+  "SK": "temp:25-29|diff:large|rain:light|
+         pm:normal|wind:calm|uv:high|pty:rain",
+
+  "top":    ["반팔", "가디건"],
+  "bottom": ["청바지"],
+  "mask":   "마스크 선택",
+  "pack":   "접이식 우산",
+  "acc":    ["선크림"],
+  "reason": "낮엔 덥지만 저녁 급격히 쌀쌀,
+             오후 잠깐 비 예상.",
+
+  "model":   "anthropic.claude-haiku-3-5",
+  "version": "v1",
+  "created_at": "2026-05-18T03:00:00Z"
+}</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- 미결 사항 -->
+    <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-red-50 border-b border-slate-200 p-5">
+            <h2 class="text-xl font-bold text-red-800">5. 미결 사항 (착수 전 협의 필요)</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                    <tr>
+                        <th class="px-6 py-4 font-semibold">항목</th>
+                        <th class="px-6 py-4 font-semibold">담당</th>
+                        <th class="px-6 py-4 font-semibold">내용</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 text-sm font-semibold">DynamoDB SK 컬럼 추가</td>
+                        <td class="px-6 py-4"><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">백엔드 / 인프라</span></td>
+                        <td class="px-6 py-4 text-xs text-slate-600">현재 PK 단독 → PK+SK 복합키 구조로 테이블 재생성 필요. <code class="code-block bg-slate-100 px-1 rounded">infra/template.yaml</code> 수정 후 콘솔에서 직접 재생성.</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 bg-slate-50/30">
+                        <td class="px-6 py-4 text-sm font-semibold">uv_index 실시간 조회 방법</td>
+                        <td class="px-6 py-4"><span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">백엔드 / 데이터</span></td>
+                        <td class="px-6 py-4 text-xs text-slate-600"><code class="code-block bg-slate-100 px-1 rounded">weather/uv_index</code>는 S3 CSV에 저장됨. recommend Lambda에서 어떻게 조회할지 방법 협의 필요.</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 text-sm font-semibold">WSD 데이터 CSV 포함 여부</td>
+                        <td class="px-6 py-4"><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">백엔드</span></td>
+                        <td class="px-6 py-4 text-xs text-slate-600"><code class="code-block bg-slate-100 px-1 rounded">get_temperature_data(rows, region, "WSD")</code> 호출이 실제 데이터를 반환하는지 확인.</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 bg-slate-50/30">
+                        <td class="px-6 py-4 text-sm font-semibold">acc / reason UI 표시</td>
+                        <td class="px-6 py-4"><span class="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded-full">프론트</span></td>
+                        <td class="px-6 py-4 text-xs text-slate-600">OOTD 카드에 추가 소지품(<code class="code-block bg-slate-100 px-1 rounded">acc</code>) 항목과 추천 근거(<code class="code-block bg-slate-100 px-1 rounded">reason</code>) 문구 표시 위치 디자인 협의.</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 text-sm font-semibold">배치 스크립트 1회 실행</td>
+                        <td class="px-6 py-4"><span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">AI 엔지니어</span></td>
+                        <td class="px-6 py-4 text-xs text-slate-600"><code class="code-block bg-slate-100 px-1 rounded">ai_pipeline/batch_generate.py</code> 작성 후 dev 환경 자격증명으로 실행. Bedrock 모델 접근 권한 사전 확인 필요.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="text-center pb-8">
+        <a href="index.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
+            ← 문서 포털로 돌아가기
+        </a>
+    </div>
+</div>
+
+<script>
+function showTab(name) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('active', 'bg-indigo-600', 'text-white');
+        el.classList.add('bg-slate-50', 'text-slate-600');
+    });
+    document.getElementById('tab-' + name).classList.add('active');
+    const btn = document.getElementById('btn-' + name);
+    btn.classList.add('active');
+    btn.classList.remove('bg-slate-50', 'text-slate-600');
+}
+
+// 모든 pre 태그에 code-wrap + 복사 버튼 추가
+document.querySelectorAll('pre').forEach(pre => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = '복사';
+    btn.addEventListener('click', () => {
+        const text = pre.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = '✓ 복사됨';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = '복사';
+                btn.classList.remove('copied');
+            }, 1800);
+        });
+    });
+    wrap.appendChild(btn);
+});
+</script>
+</body>
+</html>
