@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather-Fit API 변경사항</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Pretendard', -apple-system, sans-serif; background: #f5f7fa; color: #1a1a2e; line-height: 1.6; padding: 40px 20px; }
+  .container { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  .subtitle { color: #6b7280; margin-bottom: 40px; font-size: 14px; }
+  .endpoint { background: #fff; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .endpoint-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .method { background: #10b981; color: #fff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; }
+  .path { font-size: 20px; font-weight: 700; font-family: 'SF Mono', monospace; }
+  .desc { color: #6b7280; margin-bottom: 20px; font-size: 14px; }
+  h3 { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.7; margin-bottom: 24px; }
+  .key { color: #7dd3fc; }
+  .str { color: #86efac; }
+  .num { color: #fbbf24; }
+  .null-val { color: #f87171; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px; }
+  th { text-align: left; padding: 10px 12px; background: #f8fafc; border-bottom: 2px solid #e5e7eb; font-weight: 600; color: #374151; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+  td:first-child { font-family: 'SF Mono', monospace; font-size: 13px; color: #7c3aed; font-weight: 500; }
+  td:nth-child(2) { font-family: 'SF Mono', monospace; font-size: 12px; color: #6b7280; }
+  .note { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-size: 14px; color: #92400e; }
+  .note strong { display: block; margin-bottom: 4px; }
+  .error-section { background: #fef2f2; border-radius: 8px; padding: 16px 20px; font-size: 14px; }
+  .error-section code { background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .badge-new { background: #dbeafe; color: #1d4ed8; }
+  .divider { height: 1px; background: #e5e7eb; margin: 24px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Weather-Fit Backend API</h1>
+<p class="subtitle">프론트엔드 연동 가이드 &mdash; 2026.06.03 업데이트</p>
+
+<!-- /weather -->
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method">GET</span>
+    <span class="path">/weather</span>
+  </div>
+  <p class="desc">현재 기온, 6시간 예보(기온·강수·하늘상태), 자외선, 대기질 데이터를 반환합니다.</p>
+
+  <h3>요청</h3>
+  <pre>GET /weather?region_code=1147062000</pre>
+
+  <div class="note">
+    <strong>region 파라미터 fallback</strong>
+    region_code 없이 <code>GET /weather?region=서울특별시 양천구</code>로도 요청 가능합니다.
+  </div>
+
+  <h3>응답 예시</h3>
+  <pre>{
+  <span class="key">"region_code"</span>: <span class="str">"1147062000"</span>,
+  <span class="key">"region_name"</span>: <span class="str">"서울특별시 양천구"</span>,
+  <span class="key">"baseDate"</span>: <span class="str">"20260603"</span>,
+  <span class="key">"baseTime"</span>: <span class="str">"1800"</span>,
+  <span class="key">"temp"</span>: <span class="num">26.1</span>,
+  <span class="key">"tempForecast"</span>: [<span class="num">27</span>, <span class="num">25</span>, <span class="num">25</span>, <span class="num">24</span>, <span class="num">23</span>],
+  <span class="key">"rain"</span>: [<span class="str">"강수없음"</span>, <span class="str">"강수없음"</span>, <span class="str">"강수없음"</span>],
+  <span class="key">"sky"</span>: [<span class="str">"흐림"</span>, <span class="str">"흐림"</span>, <span class="str">"맑음"</span>],
+  <span class="key">"uv"</span>: <span class="num">1.0</span>,
+  <span class="key">"o3"</span>: <span class="str">"0.041"</span>,
+  <span class="key">"pm10"</span>: <span class="str">"13"</span>,
+  <span class="key">"pm10Grade"</span>: <span class="str">"1"</span>,
+  <span class="key">"pm25"</span>: <span class="str">"10"</span>,
+  <span class="key">"pm25Grade"</span>: <span class="str">"1"</span>
+}</pre>
+
+  <h3>필드 설명</h3>
+  <table>
+    <tr><th>필드</th><th>타입</th><th>설명</th></tr>
+    <tr><td>region_code</td><td>string</td><td>행정구역 코드</td></tr>
+    <tr><td>region_name</td><td>string</td><td>지역명</td></tr>
+    <tr><td>baseDate</td><td>string</td><td>관측 기준 날짜 (YYYYMMDD)</td></tr>
+    <tr><td>baseTime</td><td>string</td><td>관측 기준 시각 (HHMM)</td></tr>
+    <tr><td>temp</td><td>number</td><td>현재 기온 (℃)</td></tr>
+    <tr><td>tempForecast</td><td>number[]</td><td>향후 6시간 예보 기온 배열 (℃) <span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>rain</td><td>string[]</td><td>향후 6시간 예보 강수량 배열<br><code>"강수없음"</code> <code>"1mm 미만"</code> <code>"1.0~29.9mm"</code> 등 <span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>sky</td><td>string[]</td><td>향후 6시간 예보 하늘상태 배열<br><code>"맑음"</code> <code>"흐림"</code> <code>"비"</code> <code>"눈"</code> <span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>uv</td><td>number</td><td>자외선 지수 (0~11+, 당일 최대값) <span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>o3</td><td>string | null</td><td>오존 농도 (ppm) <span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>pm10</td><td>string | null</td><td>미세먼지 농도 (㎍/㎥) <span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>pm10Grade</td><td>string | null</td><td>미세먼지 등급 (1=좋음 2=보통 3=나쁨 4=매우나쁨) <span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>pm25</td><td>string | null</td><td>초미세먼지 농도 (㎍/㎥) <span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>pm25Grade</td><td>string | null</td><td>초미세먼지 등급 (1=좋음 2=보통 3=나쁨 4=매우나쁨) <span class="badge badge-new">NEW</span></td></tr>
+  </table>
+
+  <div class="note">
+    <strong>주의사항</strong>
+    대기질 데이터(o3, pm10, pm25, grade)는 측정소 매핑이 안 되는 지역에서 <code>null</code>로 올 수 있습니다.<br>
+    tempForecast, rain, sky 배열 길이는 동일하며, 보통 5~6개입니다.
+  </div>
+</div>
+
+<!-- /recommend -->
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method">GET</span>
+    <span class="path">/recommend</span>
+  </div>
+  <p class="desc">현재 날씨 패턴에 맞는 AI 기반 옷차림 추천 데이터를 반환합니다.</p>
+
+  <h3>요청</h3>
+  <pre>GET /recommend?region_code=1147062000</pre>
+
+  <h3>응답 예시</h3>
+  <pre>{
+  <span class="key">"pattern"</span>: <span class="str">"temp:25-29|diff:small|rain:none|pm:good|wind:calm|uv:low|pty:none"</span>,
+  <span class="key">"top"</span>: [<span class="str">"반팔 티셔츠"</span>, <span class="str">"린넨 셔츠"</span>],
+  <span class="key">"bottom"</span>: [<span class="str">"반바지"</span>, <span class="str">"면바지"</span>],
+  <span class="key">"mask"</span>: <span class="str">"불필요"</span>,
+  <span class="key">"pack"</span>: <span class="str">"자외선 차단제"</span>,
+  <span class="key">"acc"</span>: [<span class="str">"모자"</span>, <span class="str">"선글라스"</span>],
+  <span class="key">"reason"</span>: <span class="str">"현재 기온 25~29도로 여름 날씨입니다. 비 소식이 없고 대기질이 좋아 가벼운 옷차림을 추천합니다."</span>
+}</pre>
+
+  <h3>필드 설명</h3>
+  <table>
+    <tr><th>필드</th><th>타입</th><th>설명</th></tr>
+    <tr><td>pattern</td><td>string</td><td>매칭된 날씨 패턴 키 (디버깅용)</td></tr>
+    <tr><td>top</td><td>string[]</td><td>추천 상의 목록</td></tr>
+    <tr><td>bottom</td><td>string[]</td><td>추천 하의 목록</td></tr>
+    <tr><td>mask</td><td>string</td><td>마스크 착용 권고</td></tr>
+    <tr><td>pack</td><td>string</td><td>추가 준비물 권고</td></tr>
+    <tr><td>acc</td><td>string[]</td><td>추천 액세서리 목록</td></tr>
+    <tr><td>reason</td><td>string</td><td>AI 생성 추천 사유 설명</td></tr>
+  </table>
+
+  <h3>패턴 키 구성요소</h3>
+  <table>
+    <tr><th>키</th><th>가능한 값</th><th>설명</th></tr>
+    <tr><td>temp</td><td><code>35over</code> <code>30-34</code> <code>25-29</code> <code>20-24</code> <code>15-19</code> <code>10-14</code> <code>5-9</code> <code>0-4</code> <code>-10--1</code> <code>under-11</code></td><td>기온 구간 (10단계)</td></tr>
+    <tr><td>diff</td><td><code>none</code> <code>small</code> <code>normal</code> <code>large</code> <code>xlarge</code></td><td>일교차 (5단계)</td></tr>
+    <tr><td>rain</td><td><code>none</code> <code>drizzle</code> <code>light</code> <code>moderate</code> <code>heavy</code></td><td>강수량 (5단계)</td></tr>
+    <tr><td>pm</td><td><code>good</code> <code>normal</code> <code>bad</code> <code>very_bad</code></td><td>미세먼지 등급 (4단계)</td></tr>
+    <tr><td>wind</td><td><code>calm</code> <code>moderate</code> <code>strong</code></td><td>풍속 (3단계)</td></tr>
+    <tr><td>uv</td><td><code>low</code> <code>normal</code> <code>high</code></td><td>자외선 지수 (3단계)</td></tr>
+    <tr><td>pty</td><td><code>none</code> <code>rain</code> <code>snow</code></td><td>강수 형태 (3단계)</td></tr>
+  </table>
+</div>
+
+<!-- Error -->
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="path">에러 응답</span>
+  </div>
+  <div class="error-section">
+    <table>
+      <tr><th>Status</th><th>조건</th><th>응답</th></tr>
+      <tr><td>400</td><td>region_code, region 둘 다 없음</td><td><code>{"error": "region_code 또는 region 파라미터가 필요합니다."}</code></td></tr>
+      <tr><td>404</td><td>기상 데이터 없음</td><td><code>{"error": "해당 지역의 기상 데이터를 찾을 수 없습니다."}</code></td></tr>
+      <tr><td>404</td><td>추천 패턴 매칭 실패</td><td><code>{"error": "해당 패턴의 추천 데이터가 없습니다.", "pattern": "..."}</code></td></tr>
+      <tr><td>404</td><td>잘못된 경로</td><td><code>{"error": "잘못된 API 경로입니다."}</code></td></tr>
+      <tr><td>500</td><td>서버 내부 오류</td><td><code>{"error": "서버 내부 오류가 발생했습니다."}</code></td></tr>
+    </table>
+  </div>
+</div>
+
+        <div class="text-center pt-4 pb-8">
+            <a href="index.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> 문서 포털로 돌아가기
+            </a>
+        </div>
+</div>
+</body>
+</html>
