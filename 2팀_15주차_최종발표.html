@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeatherFit — 최종 발표</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --bg:#FFFFFF; --pagebg:#E6EAF1; --ink:#0F172A; --ink2:#334155; --mut:#64748B;
+    --amber:#D97706; --amber2:#F59E0B; --amberbg:#FEF7EC;
+    --line:#E2E8F0; --blue:#2563EB; --bluebg:#EFF6FF; --green:#059669; --greenbg:#ECFDF5;
+    --navy:#0F172A; --red:#DC2626;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{background:var(--pagebg); font-family:'Pretendard Variable','Pretendard',-apple-system,system-ui,sans-serif; color:var(--ink); overflow:hidden;}
+
+  /* 16:9 고정 캔버스 (좌우로 늘어나지 않도록) */
+  .stage{position:absolute; top:50%; left:50%; width:1280px; height:720px; transform:translate(-50%,-50%);
+         transform-origin:center; background:var(--bg);}
+  .slide{position:absolute; inset:0; display:none; flex-direction:column; padding:64px 80px 76px; background:var(--bg);}
+  .slide.active{display:flex;}
+  .slide::before{content:""; position:absolute; top:0; left:0; right:0; height:8px;
+    background:linear-gradient(90deg,var(--amber),var(--amber2));}
+
+  h1{font-size:64px; line-height:1.08; font-weight:800; letter-spacing:-.02em;}
+  h2{font-size:40px; font-weight:800; display:inline-block; padding-bottom:8px; border-bottom:5px solid var(--amber2); letter-spacing:-.01em;}
+  h3{font-size:22px; font-weight:700; color:var(--amber); margin:0 0 6px;}
+  p,li,td,th{font-size:22px; line-height:1.5; color:var(--ink2);}
+  .kicker{color:var(--amber); font-weight:800; letter-spacing:.18em; font-size:15px; text-transform:uppercase; margin-bottom:16px;}
+  .sub{color:var(--mut);}
+  ul{margin:6px 0 0 24px;} li{margin:9px 0;}
+  .grid{display:grid; gap:18px; margin-top:26px;}
+  .g2{grid-template-columns:1fr 1fr;} .g3{grid-template-columns:1fr 1fr 1fr;}
+  .card{background:#F8FAFC; border:1px solid var(--line); border-radius:16px; padding:20px 22px;}
+  .card h3{margin-top:0;}
+  table{width:100%; border-collapse:collapse; margin-top:20px;}
+  th,td{text-align:left; padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top; font-size:20px;}
+  th{color:var(--mut); font-size:14px; text-transform:uppercase; letter-spacing:.04em;}
+  .old{color:var(--red);} .new{color:var(--green); font-weight:700;}
+  .mut{color:var(--mut);} .amber{color:var(--amber);}
+  .pill{display:inline-block; background:var(--amberbg); color:var(--amber); border:1px solid #F4D29A;
+        border-radius:999px; padding:6px 16px; font-size:15px; font-weight:700; margin:4px 6px 4px 0;}
+  .tag{display:inline-block; font-size:13px; font-weight:800; border-radius:7px; padding:2px 8px; margin-right:6px;}
+  .t-add{background:var(--greenbg); color:var(--green);}
+  .center{align-items:center; justify-content:center; text-align:center;}
+  .lead{font-size:26px; line-height:1.5; margin-top:14px;}
+  .emoji{font-size:96px; line-height:1;}
+  .footer{position:absolute; bottom:30px; left:80px; right:80px; display:flex; justify-content:space-between; color:var(--mut); font-size:15px;}
+  .progress{position:absolute; top:0; left:0; height:8px; z-index:5; background:linear-gradient(90deg,var(--amber),var(--amber2));}
+  .hint{position:fixed; bottom:10px; left:50%; transform:translateX(-50%); color:#5b6678; font-size:12px; opacity:.7; z-index:10;}
+  .btn{display:inline-flex; align-items:center; gap:10px; text-decoration:none;
+       background:linear-gradient(90deg,var(--amber),var(--amber2)); color:#fff; font-weight:800;
+       font-size:22px; padding:14px 28px; border-radius:999px; box-shadow:0 6px 18px rgba(217,119,6,.3);
+       transition:transform .15s, box-shadow .15s;}
+  .btn:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(217,119,6,.38);}
+  .btn .u{font-size:16px; font-weight:600; opacity:.92;}
+  .demo-steps{counter-reset:step; margin-left:0;}
+  .demo-steps li{list-style:none; position:relative; padding-left:40px; margin:10px 0; font-size:20px;}
+  .demo-steps li::before{counter-increment:step; content:counter(step); position:absolute; left:0; top:0;
+     width:28px; height:28px; background:var(--amber2); color:#fff; font-weight:800; border-radius:50%;
+     display:flex; align-items:center; justify-content:center; font-size:15px;}
+  .archwrap{margin-top:14px; flex:1; display:flex; align-items:center; justify-content:center;}
+  svg .nlabel{font:700 19px 'Pretendard Variable',sans-serif; fill:var(--ink);}
+  svg .nsub{font:600 14px 'Pretendard Variable',sans-serif; fill:var(--mut);}
+  svg .elabel{font:700 14px 'Pretendard Variable',sans-serif; fill:#475569;
+    paint-order:stroke; stroke:#ffffff; stroke-width:5px; stroke-linejoin:round;}
+
+  @media print{
+    @page{size:1280px 720px; margin:0;}
+    html,body{overflow:visible; background:#fff;}
+    .stage{position:static; transform:none; width:1280px; height:720px;}
+    .slide{display:flex !important; page-break-after:always;}
+    .progress,.hint,.footer{}
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="progress" id="progress"></div>
+
+  <!-- 1 표지 -->
+  <section class="slide center">
+    <div class="emoji">☀️🧥</div>
+    <h1 style="margin-top:14px;">WeatherFit</h1>
+    <p class="lead">서버리스 아키텍처 기반 준실시간 기상·대기질 융합 <b class="amber">옷차림 추천 서비스</b></p>
+    <p class="sub" style="margin-top:26px; font-size:20px;">인하공전 <b>2팀</b> · 최종 발표</p>
+    <p class="sub" style="margin-top:6px; font-size:17px;">최건(PM·인프라) · 고원영(백엔드) · 김호건(데이터 엔지니어) · 박근령(데이터 분석·AI) · 최혁(프론트·네트워크)</p>
+  </section>
+
+  <!-- 2 목차 -->
+  <section class="slide">
+    <div class="kicker">Contents</div>
+    <h2>목차</h2>
+    <div class="grid g2" style="margin-top:30px;">
+      <div class="card"><h3>01 · 프로젝트 개요</h3><p class="sub">주제·의도·목표 리마인드</p></div>
+      <div class="card"><h3>02 · 기획에서 변경된 내용</h3><p class="sub">룰 기반 → AI 사전배치 등</p></div>
+      <div class="card"><h3>03 · 개발 스케줄 결과</h3><p class="sub">계획 vs 실제</p></div>
+      <div class="card"><h3>04 · 개발된 사항</h3><p class="sub">아키텍처·기능·비용</p></div>
+      <div class="card"><h3>05 · 자세한 데모</h3><p class="sub">라이브 시연</p></div>
+      <div class="card"><h3>06 · 트러블슈팅 & 향후</h3><p class="sub">운영 안정화</p></div>
+    </div>
+  </section>
+
+  <!-- 3 개요 -->
+  <section class="slide">
+    <div class="kicker">01 · Overview</div>
+    <h2>프로젝트 개요</h2>
+    <div class="grid g3" style="margin-top:24px;">
+      <div class="card"><h3>주제</h3><p>전국 기상·대기질을 한눈에 + <b class="amber">복장·마스크 지수</b>를 즉시 확인하는 정밀 생활 가이드</p></div>
+      <div class="card"><h3>기획 의도</h3><p>날씨 확인 → "뭐 입지?"까지 <b>한 화면</b>에서 해결</p></div>
+      <div class="card"><h3>핵심 목표</h3><p><b class="amber">요청당 서비스 비용 0원</b>에 가까운 비용 효율 <b>클라우드 네이티브</b> 아키텍처 구현·증명</p></div>
+    </div>
+    <p class="lead" style="margin-top:30px;">👉 이번 변경들로 <b class="amber">서빙(요청) 비용을 사실상 0원</b>으로 만들고, 추론 비용을 1회 배치로 고정했습니다.</p>
+  </section>
+
+  <!-- 4 기획 변경 표 -->
+  <section class="slide">
+    <div class="kicker">02 · Changes</div>
+    <h2>기획에서 변경된 내용</h2>
+    <table>
+      <tr><th>영역</th><th>기획(4주차)</th><th>최종 구현</th></tr>
+      <tr><td>추천 알고리즘</td><td class="old">룰 기반 (4℃↓ 패딩 등)</td><td class="new">AI(Bedrock) 배치 27,000 패턴 사전생성</td></tr>
+      <tr><td>백엔드</td><td class="old">FastAPI+Mangum+API Gateway</td><td class="new">단일 Lambda + Function URL</td></tr>
+      <tr><td>수집</td><td class="old">단일 Lambda</td><td class="new">Step Functions Distributed Map (병렬)</td></tr>
+      <tr><td>화면</td><td class="old">대시보드 / 복장지표 분리</td><td class="new">홈 단일 화면 통합</td></tr>
+      <tr><td>배포</td><td class="old">SAM</td><td class="new">GitHub Actions update-function-code</td></tr>
+      <tr><td>데이터 분석</td><td class="old">Glue 정제 · Athena 통계</td><td class="mut">범위 제외 · 향후 도입 과제로 이관</td></tr>
+    </table>
+    <p style="margin-top:16px; font-size:18px;"><span class="tag t-add">추가</span> PWA · 체감온도 · 자외선 · 시간별 상세 패널 · 인터랙티브 마스크 · forecast TTL · 단위테스트</p>
+  </section>
+
+  <!-- 5 변경 핵심 -->
+  <section class="slide center">
+    <div class="kicker">02 · Key Change</div>
+    <h2 style="border:none; font-size:46px;">룰 기반 → <span class="amber">AI 사전배치</span></h2>
+    <div class="grid g3" style="margin-top:34px; width:100%;">
+      <div class="card"><h3>BEFORE</h3><p class="old" style="font-weight:700;">요청마다 룰 계산</p><p class="sub" style="font-size:17px;">경계값 한계·유지보수 부담</p></div>
+      <div class="card" style="border-color:#F4D29A; background:var(--amberbg);"><h3>핵심</h3><p style="font-weight:800; color:var(--ink);">Bedrock(Claude Haiku 4.5) 배치로 27,000 패턴 전조합 1회 생성 → 영구 캐시</p></div>
+      <div class="card"><h3>AFTER</h3><p class="new">요청 = DynamoDB 조회만</p><p class="sub" style="font-size:17px;">LLM·외부 API 호출 0</p></div>
+    </div>
+    <p class="lead" style="margin-top:30px;">⚡ 빠르고 · 💰 요청당 사실상 0원 · 🛡️ 안정적</p>
+  </section>
+
+  <!-- 6 스케줄 -->
+  <section class="slide">
+    <div class="kicker">03 · Schedule</div>
+    <h2>개발 스케줄 결과 (계획 vs 실제)</h2>
+    <table>
+      <tr><th>단계</th><th>계획(원안)</th><th>실제 결과</th></tr>
+      <tr><td>인프라·CI/CD 셋업</td><td class="mut">4–5주 · SAM 배포</td><td class="new">✅ GitHub Actions + 콘솔 관리</td></tr>
+      <tr><td>공공 API 수집</td><td class="mut">5–6주 · 단일 Lambda</td><td class="new">✅ Step Functions로 재설계</td></tr>
+      <tr><td>추천 로직·API</td><td class="mut">7–8주 · 룰 API</td><td class="new">✅ AI 배치 + 단일 Lambda 서빙</td></tr>
+      <tr><td>데이터 적재·캐시</td><td class="mut">7–9주 · DDB 적재</td><td class="new">✅ DynamoDB 4종 + forecast TTL</td></tr>
+      <tr><td>프론트·통합</td><td class="mut">10–14주 · 대시보드</td><td class="new">✅ 홈 통합 + PWA</td></tr>
+      <tr><td>안정화·QA</td><td class="mut">(계획 외)</td><td class="new">✅ 리뷰·버그수정·문서/IaC 현행화</td></tr>
+    </table>
+    <p class="sub" style="margin-top:16px;">핵심 기능은 일정 내 완료 · 후반은 운영 안정화에 집중 · 데이터 분석(Glue/Athena)은 향후 과제로 이관</p>
+  </section>
+
+  <!-- 7 아키텍처 (SVG 플로우차트) -->
+  <section class="slide">
+    <div class="kicker">04 · Architecture</div>
+    <h2>최종 아키텍처 &amp; 데이터 흐름</h2>
+    <div class="archwrap" style="flex-direction:column;">
+      <svg viewBox="0 0 1180 500" width="100%" style="max-height:430px;">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#94A3B8"/>
+          </marker>
+        </defs>
+
+        <!-- 영역 라벨 -->
+        <text x="60" y="18" class="elabel" fill="#2563EB">수집 · 추론 (자동·저비용)</text>
+        <text x="1000" y="18" class="elabel" fill="#0F172A">서빙 (요청당 LLM·외부API 0)</text>
+
+        <!-- edges -->
+        <!-- EventBridge -> 수집 -->
+        <line x1="120" y1="100" x2="120" y2="158" stroke="#94A3B8" stroke-width="2.5" marker-end="url(#arr)"/>
+        <text x="135" y="133" class="elabel">주기 트리거</text>
+        <!-- 공공API -> 수집 -->
+        <line x1="320" y1="108" x2="320" y2="158" stroke="#94A3B8" stroke-width="2.5" marker-end="url(#arr)"/>
+        <text x="332" y="135" class="elabel">API 호출</text>
+        <!-- 수집 -> DB 상단(top) -->
+        <path d="M372,188 C 512,188 602,176 602,222" fill="none" stroke="#059669" stroke-width="2.8" marker-end="url(#arr)"/>
+        <text x="560" y="170" text-anchor="middle" class="elabel" fill="#059669">적재</text>
+        <!-- AI배치 -> DB 하단(bottom) -->
+        <path d="M372,452 C 512,452 602,426 602,380" fill="none" stroke="#059669" stroke-width="2.8" marker-end="url(#arr)"/>
+        <text x="560" y="444" text-anchor="middle" class="elabel" fill="#059669">사전생성</text>
+        <!-- serving chain -->
+        <line x1="1010" y1="96" x2="1010" y2="142" stroke="#94A3B8" stroke-width="2.5" marker-end="url(#arr)"/>
+        <line x1="1010" y1="226" x2="1010" y2="266" stroke="#94A3B8" stroke-width="2.5" marker-end="url(#arr)"/>
+        <text x="1022" y="252" class="elabel">fetch</text>
+        <!-- recommendAPI -> DB (read) : 깔끔한 수평 직선 -->
+        <line x1="884" y1="308" x2="738" y2="308" stroke="#2563EB" stroke-width="2.8" marker-end="url(#arr)"/>
+        <text x="811" y="298" text-anchor="middle" class="elabel" fill="#2563EB">조회만</text>
+
+        <!-- EventBridge -->
+        <g><rect x="44" y="42" width="152" height="58" rx="12" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+          <text x="120" y="68" text-anchor="middle" class="nlabel" style="font-size:17px;">EventBridge</text>
+          <text x="120" y="88" text-anchor="middle" class="nsub">스케줄</text></g>
+        <!-- 공공 API -->
+        <g><rect x="220" y="36" width="300" height="72" rx="14" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+          <text x="370" y="68" text-anchor="middle" class="nlabel">공공 API</text>
+          <text x="370" y="92" text-anchor="middle" class="nsub">기상청 · 에어코리아 · 생활기상</text></g>
+        <!-- 수집 Lambda -->
+        <g><rect x="60" y="158" width="312" height="104" rx="14" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+          <text x="216" y="194" text-anchor="middle" class="nlabel">수집 Lambda</text>
+          <text x="216" y="218" text-anchor="middle" class="nsub">Step Functions · Distributed Map</text>
+          <text x="216" y="240" text-anchor="middle" class="nsub">매니페스트 → 병렬 → 병합</text></g>
+        <!-- AI 배치 -->
+        <g><rect x="60" y="392" width="312" height="94" rx="14" fill="#FEF7EC" stroke="#F59E0B" stroke-width="2"/>
+          <text x="216" y="426" text-anchor="middle" class="nlabel">AI 배치 · Claude Haiku 4.5</text>
+          <text x="216" y="450" text-anchor="middle" class="nsub">27,000 패턴 사전생성</text>
+          <text x="216" y="470" text-anchor="middle" class="nsub">신규 패턴 시 1회 → 영구 캐시</text></g>
+
+        <!-- DynamoDB 중앙 -->
+        <g><rect x="470" y="222" width="264" height="158" rx="16" fill="#ECFDF5" stroke="#059669" stroke-width="2.5"/>
+          <text x="602" y="258" text-anchor="middle" class="nlabel" style="font-size:21px;">DynamoDB 캐시</text>
+          <text x="602" y="288" text-anchor="middle" class="nsub">weather · air · forecast</text>
+          <text x="602" y="310" text-anchor="middle" class="nsub">· recommend</text>
+          <text x="602" y="348" text-anchor="middle" class="nsub" style="fill:#059669; font-weight:700;">+ S3 (원본 보관)</text></g>
+
+        <!-- 사용자 -->
+        <g><rect x="910" y="38" width="200" height="56" rx="14" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+          <text x="1010" y="73" text-anchor="middle" class="nlabel">사용자 (PWA)</text></g>
+        <!-- Vue SPA -->
+        <g><rect x="884" y="142" width="252" height="84" rx="14" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+          <text x="1010" y="178" text-anchor="middle" class="nlabel">Vue SPA</text>
+          <text x="1010" y="202" text-anchor="middle" class="nsub">S3 정적 호스팅</text></g>
+        <!-- recommendAPI -->
+        <g><rect x="884" y="266" width="252" height="96" rx="14" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+          <text x="1010" y="302" text-anchor="middle" class="nlabel">recommendAPI Lambda</text>
+          <text x="1010" y="326" text-anchor="middle" class="nsub">Function URL</text>
+          <text x="1010" y="346" text-anchor="middle" class="nsub">DynamoDB 조회만</text></g>
+      </svg>
+      <p class="sub" style="margin-top:10px; font-size:17px; text-align:center;">
+        ⏱ <b>수집 주기</b> — 데이터 특성별 <b>차등</b> (실황·미세먼지 1시간 · 예보 3시간 · 자외선·대기확산 6시간)
+        &nbsp;│&nbsp; AI 배치 = 신규 패턴 발생 시 1회(영구 캐시)
+      </p>
+    </div>
+  </section>
+
+  <!-- 7b 아키텍처 상세 (수집 파이프라인) -->
+  <section class="slide">
+    <div class="kicker">04 · Architecture · Detail</div>
+    <h2>수집 파이프라인 상세</h2>
+
+    <!-- 가로 흐름 -->
+    <div style="display:flex; align-items:stretch; gap:6px; margin-top:20px;">
+      <div style="flex:1; background:#FFF7ED; border:1.5px solid #EA580C; border-radius:12px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; gap:5px;">
+        <b style="font-size:16px; color:var(--ink);">EventBridge</b>
+        <span style="font-size:12px; color:var(--mut);">차등 주기<br>(데이터 특성별)</span></div>
+      <div style="align-self:center; color:var(--mut); font-weight:800; font-size:20px;">→</div>
+      <div style="flex:1.2; background:var(--bluebg); border:1.5px solid var(--blue); border-radius:12px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; gap:5px;">
+        <b style="font-size:16px; color:var(--ink);">배치 분할 Lambda</b>
+        <span style="font-size:12px; color:var(--mut);">location.csv → 격자·행정동<br>배치 30~50 + S3 매니페스트</span></div>
+      <div style="align-self:center; color:var(--mut); font-weight:800; font-size:20px;">→</div>
+      <div style="flex:1; background:var(--bluebg); border:1.5px solid var(--blue); border-radius:12px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; gap:5px;">
+        <b style="font-size:16px; color:var(--ink);">Step Functions</b>
+        <span style="font-size:12px; color:var(--mut);">Distributed Map<br>배치 병렬 실행</span></div>
+      <div style="align-self:center; color:var(--mut); font-weight:800; font-size:20px;">→</div>
+      <div style="flex:1.1; background:var(--bluebg); border:1.5px solid var(--blue); border-radius:12px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; gap:5px;">
+        <b style="font-size:16px; color:var(--ink);">수집 Worker</b>
+        <span style="font-size:12px; color:var(--mut);">공공 API 호출·파싱<br>재시도·타임아웃</span></div>
+      <div style="align-self:center; color:var(--mut); font-weight:800; font-size:20px;">→</div>
+      <div style="flex:1; background:var(--greenbg); border:1.5px solid var(--green); border-radius:12px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; gap:5px;">
+        <b style="font-size:16px; color:var(--ink);">적재·병합</b>
+        <span style="font-size:12px; color:var(--mut);">S3(원본)<br>DynamoDB(put)</span></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:24px; gap:24px;">
+      <div>
+        <h3>파이프라인 4종 · 데이터 특성별 차등 주기</h3>
+        <table style="margin-top:8px;">
+          <tr><th>파이프라인</th><th>공공 API</th><th>주기</th></tr>
+          <tr><td>실황</td><td>기상청 초단기실황</td><td><b class="amber">1시간</b></td></tr>
+          <tr><td>대기질(미세먼지)</td><td>에어코리아</td><td><b class="amber">1시간</b></td></tr>
+          <tr><td>초단기예보</td><td>기상청 초단기예보(+6시간)</td><td>3시간</td></tr>
+          <tr><td>자외선·대기확산</td><td>생활기상지수 V5</td><td>6시간</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>DynamoDB 캐시 4종 · 복합키</h3>
+        <table style="margin-top:8px;">
+          <tr><th>테이블</th><th>키 · 특징</th></tr>
+          <tr><td>weather-cache</td><td>region_code + date#time#category</td></tr>
+          <tr><td>forecast-cache</td><td>fcstDate#fcstTime#category · TTL</td></tr>
+          <tr><td>air-cache</td><td>행정동·측정소 매핑</td></tr>
+          <tr><td>recommend-cache</td><td>AI 패턴키 · 27,000 패턴 영구</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:16px; font-size:16px;">전국 약 <b>3,558개 행정동</b> · 고유 격자로 묶어 병렬 수집 → 지역별 캐시 적재 <b>(수집 경로와 서빙 경로 완전 분리)</b><br>주기는 원천 갱신 특성에 맞춤 — 자외선은 <b>수시 갱신(일 2~8회)</b> 특성상 6시간, forecast TTL은 수집 주기 이상으로 설정</p>
+  </section>
+
+  <!-- 8 기능 -->
+  <section class="slide">
+    <div class="kicker">04 · Features</div>
+    <h2>개발된 사항 — 기능</h2>
+    <div class="grid g2" style="margin-top:24px;">
+      <div class="card"><h3>🌡️ 현재 날씨 / 대기질</h3><p>기온 · <b class="amber">체감온도</b> · 미세/초미세먼지 + 관측 기준 갱신시각</p></div>
+      <div class="card"><h3>🧥 OOTD 추천</h3><p>상의·하의·소지품 + <b class="amber">인터랙티브 마스크</b> (PC 호버 / 모바일 탭 → PM2.5 단계·KF 등급)</p></div>
+      <div class="card"><h3>⏰ 시간별 예보</h3><p>카드 클릭 → 상세 패널 (기온·체감·강수·하늘·<b class="amber">자외선</b>) — 선택 시각 기준</p></div>
+      <div class="card"><h3>🔍 지역 검색 · 📱 PWA</h3><p>카카오맵·행정동 자동완성 · 홈 화면 설치·오프라인</p></div>
+    </div>
+  </section>
+
+  <!-- 9 운영 예산 -->
+  <section class="slide">
+    <div class="kicker">04 · Budget</div>
+    <h2>운영 예산 (재추정)</h2>
+    <p class="sub" style="margin-top:8px; font-size:15px;">※ 학교 계정 권한으로 실청구액 조회 불가 → 전국 3,558개 행정동 · <b>데이터 특성별 차등 주기</b>(실황·미세먼지 1시간 · 예보 3시간 · 자외선·대기확산 6시간) · AWS 공식 단가 기준</p>
+    <table style="margin-top:10px;">
+      <tr><th style="width:30%;">서비스</th><th style="width:44%;">월 사용량 (차등 주기 기준)</th><th style="width:26%;">비용 (추정)</th></tr>
+      <tr><td>DynamoDB 쓰기 (수집 적재)</td><td>약 7천만 건/월 — <b>예보(3시간)·실황(1시간)이 대부분</b></td><td><b class="amber">약 ₩12~15만</b> ← 비용 대부분</td></tr>
+      <tr><td>Step Functions</td><td>표준 워크플로 상태전이 월 수만 건</td><td>약 ₩수천</td></tr>
+      <tr><td>Lambda (수집 팬아웃 + 서빙)</td><td>호출·GB-초 프리티어 내</td><td><b class="amber">≈ 0원</b></td></tr>
+      <tr><td>DynamoDB 읽기 (서빙)</td><td>요청당 소량 조회</td><td><b class="amber">≈ 0원</b></td></tr>
+      <tr><td>S3 · CloudFront</td><td>원본 보관 · 정적 호스팅(소량)</td><td><b class="amber">≈ 0원</b></td></tr>
+      <tr><td>Bedrock · Claude Haiku 4.5 배치</td><td>27,000 패턴 1회 생성 (영구 캐시)</td><td><b>1회 ₩2~3만</b></td></tr>
+    </table>
+    <p class="lead center" style="margin-top:14px;">월 운영비 <b class="amber">약 ₩15만 추정</b> (차등 주기 적용) · <b>서빙(요청 경로)은 사실상 0원</b></p>
+    <p class="sub" style="margin-top:8px; font-size:14px;">💡 1시간 일괄 수집 시 ₩30만 → <b>데이터 특성별 차등 주기로 절반 절감</b> · 예보를 <b>격자 단위 저장(중복 제거)</b>까지 적용하면 월 ₩5만 이하 여지</p>
+  </section>
+
+  <!-- 10 데모 -->
+  <section class="slide">
+    <div class="kicker">05 · Demo</div>
+    <h2>자세한 데모 <span class="sub" style="font-size:18px; border:none; font-weight:600;">· weather-fit.kro.kr</span></h2>
+    <div class="grid g3" style="margin-top:22px;">
+      <div class="card"><h3>A. 현재 위치</h3>
+        <ul class="demo-steps"><li>위치 허용 → 홈</li><li>체감온도·미세먼지 확인</li><li>마스크 카드 호버/탭</li><li>시간별 카드 → 상세(자외선)</li></ul></div>
+      <div class="card"><h3>B. 지역 검색</h3>
+        <ul class="demo-steps"><li>행정동 자동완성</li><li>지도 이동·폴리곤</li><li>최근 검색 재조회</li><li>복장지표 확인 → 홈</li></ul></div>
+      <div class="card"><h3>C. PWA / API</h3>
+        <ul class="demo-steps"><li>홈 화면에 추가</li><li>전체화면 실행</li><li>오프라인 캐시 동작</li><li>/weather 응답 JSON</li></ul></div>
+    </div>
+    <div style="margin-top:26px; text-align:center;">
+      <a class="btn" href="https://weather-fit.kro.kr/" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        ▶ 라이브 데모 열기 <span class="u">weather-fit.kro.kr</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 11 트러블슈팅 -->
+  <section class="slide">
+    <div class="kicker">06 · Troubleshooting</div>
+    <h2>트러블슈팅 (운영 안정화)</h2>
+    <div class="grid g3" style="margin-top:22px;">
+      <div class="card"><h3>수집 중단 진단</h3><p>화면에 며칠 전 데이터 → 원인은 수집 <b>EventBridge / Step Functions 미동작</b> (로그 부재로 특정) → 재가동</p></div>
+      <div class="card"><h3>시간별 예보 누적 버그</h3><p>지난 예보가 쌓여 시각·값 불일치 → <b>"최신 발표분만" 조회 + TTL</b>, 예보 base_time 규격(매시 30분) 정정</p></div>
+      <div class="card"><h3>코드 품질 전수 개선</h3><p>localStorage 크래시 방어 · 요청 레이스 가드 · S3 페이지네이션 · API 재시도 · 접근성 · 문서/IaC 현행화</p></div>
+      <div class="card"><h3>수집 비용 최적화</h3><p>1시간 일괄 → <b>데이터 특성별 차등 주기</b>(예보 3시간·자외선 6시간)로 월 ₩30만 → 약 ₩15만 절감</p></div>
+      <div class="card"><h3>자외선 시간 정합</h3><p>자외선 API(V5) hN = <b>발표시각+N시간</b> → 예보 시각별로 정렬해 표시 · 추천 키는 <b>현재시각 기준</b> 산정</p></div>
+    </div>
+  </section>
+
+  <!-- 12 확장 가능성 -->
+  <section class="slide">
+    <div class="kicker">06 · Scalability & Extensibility</div>
+    <h2>확장 가능성</h2>
+    <p class="sub" style="margin-top:10px;">본 서버리스 구조는 핵심 변경 없이 다음 방향으로 확장됩니다.</p>
+    <div class="grid g2" style="margin-top:18px;">
+      <div class="card"><h3>예보 지평·변수 확장</h3><p>초단기예보(6시간) → <b class="amber">단기예보</b>로 12시간+ 예보 및 <b>강수확률</b> 등 변수 확장</p></div>
+      <div class="card"><h3>공간 확장 · 비용 최적화</h3><p>격자/측정소 추가로 <b>Distributed Map</b> 그대로 수평 확장 · 예보 <b>격자 단위 저장(중복 제거)</b>으로 적재 비용 선형 절감</p></div>
+      <div class="card"><h3>추천 고도화</h3><p>패턴 차원 확대(<b>시간대별·개인화</b>), 사용자 피드백 학습으로 추천 정밀도 향상</p></div>
+      <div class="card"><h3>분석 계층 · 운영 자동화</h3><p>S3 원본 → <b>Glue/Athena</b> 통계·트렌드 분석 · 배포 시 <b>CloudFront 캐시 무효화 자동화</b> · CI 승인 게이트로 운영 신뢰성 확장</p></div>
+    </div>
+  </section>
+
+  <!-- 13 팀원별 기여 -->
+  <section class="slide">
+    <div class="kicker">Team</div>
+    <h2>팀원별 기여</h2>
+    <table style="margin-top:14px;">
+      <tr><th style="width:13%;">팀원</th><th style="width:18%;">역할</th><th>주요 기여</th></tr>
+      <tr><td><b>최건</b></td><td>PM · 인프라</td><td>CI/CD(GitHub Actions)·인프라 YAML·Lambda 배포/동기화 · 백엔드 전국단위 확장·시계열 조회·AI답변 채택 · 데이터 정합(미세먼지 보정·매핑·관측소 폴백) · 전반 코드 리팩토링·안정성/성능 최적화·버그 수정 · 수집 주기 차등 설계로 운영비(예산) 최적화 · 문서/보안 정리</td></tr>
+      <tr><td><b>김호건</b></td><td>데이터 엔지니어</td><td>공공 API 수집 Lambda(실황·예보·대기질·자외선) · Step Functions Distributed Map·EventBridge 스케줄 오케스트레이션 · S3/DynamoDB 적재</td></tr>
+      <tr><td><b>고원영</b></td><td>백엔드</td><td>recommendAPI 백엔드 로직 · 지역명↔코드/측정소 매핑 · 전국단위 처리·버그 수정 · 로컬 실행 환경</td></tr>
+      <tr><td><b>박근령</b></td><td>데이터 분석 · AI</td><td>ai_pipeline 구축 · 패턴 도메인·프롬프트 설계 · Bedrock Batch 전환 · 추천 생성·저장</td></tr>
+      <tr><td><b>최혁</b></td><td>프론트 · 네트워크</td><td>Vue SPA · 날씨 API 연동 스토어 · 홈/검색/복장지표 컴포넌트 · GPS·카카오맵 로딩 · 모바일 UI</td></tr>
+    </table>
+  </section>
+
+  <!-- 14 끝 -->
+  <section class="slide center">
+    <div class="emoji">🙏</div>
+    <h1 style="margin-top:14px;">감사합니다</h1>
+    <p class="lead">Q &amp; A</p>
+    <div style="margin-top:24px;">
+      <a class="btn" href="https://weather-fit.kro.kr/" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        🌤️ WeatherFit 바로가기 <span class="u">weather-fit.kro.kr</span>
+      </a>
+    </div>
+    <div style="margin-top:22px;">
+      <span class="pill">룰 → AI 배치</span><span class="pill">서빙 0원</span><span class="pill">Step Functions</span><span class="pill">PWA</span>
+    </div>
+  </section>
+
+  <div class="footer"><span>WeatherFit · 2팀</span><span id="pageno"></span></div>
+</div>
+<div class="hint">← → / Space 이동 · F 전체화면 · Ctrl(⌘)+P → PDF</div>
+
+<script>
+  const stage=document.getElementById('stage');
+  const slides=[...document.querySelectorAll('.slide')];
+  const prog=document.getElementById('progress');
+  const pageno=document.getElementById('pageno');
+  let i=0;
+
+  function fit(){
+    const s=Math.min(window.innerWidth/1280, window.innerHeight/720);
+    stage.style.transform=`translate(-50%,-50%) scale(${s})`;
+  }
+  window.addEventListener('resize',fit); fit();
+
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    prog.style.width=((i+1)/slides.length*100)+'%';
+    pageno.textContent=(i+1)+' / '+slides.length;
+    location.hash=i+1;
+  }
+  const next=()=>show(i+1), prev=()=>show(i-1);
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next();}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==='Home')show(0); else if(e.key==='End')show(slides.length-1);
+    else if(e.key.toLowerCase()==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+  });
+  stage.addEventListener('click',e=>{ (e.clientX<window.innerWidth*0.25)?prev():next(); });
+  show((parseInt(location.hash.replace('#',''))||1)-1);
+</script>
+</body>
+</html>
