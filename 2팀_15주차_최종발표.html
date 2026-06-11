@@ -144,6 +144,39 @@
     <p class="lead" style="margin-top:30px;">⚡ 빠르고 · 💰 요청당 사실상 0원 · 🛡️ 안정적</p>
   </section>
 
+  <!-- 5b AI 패턴키 로직 -->
+  <section class="slide">
+    <div class="kicker">02 · Pattern Key</div>
+    <h2>AI 패턴키(SK) 로직 — 27,000 패턴 매칭</h2>
+
+    <!-- 흐름 -->
+    <div style="display:flex; align-items:center; gap:10px; margin-top:18px; font-size:17px;">
+      <div style="flex:1.1; background:var(--bluebg); border:1.5px solid var(--blue); border-radius:12px; padding:10px 12px; text-align:center;"><b>캐시 조회</b><br><span style="font-size:13px; color:var(--mut);">실황·예보·대기질·자외선</span></div>
+      <div style="color:var(--mut); font-weight:800;">→</div>
+      <div style="flex:1.1; background:var(--amberbg); border:1.5px solid #F4D29A; border-radius:12px; padding:10px 12px; text-align:center;"><b>7개 변수 → 구간화</b><br><span style="font-size:13px; color:var(--mut);">연속값을 단계(버킷)로 변환</span></div>
+      <div style="color:var(--mut); font-weight:800;">→</div>
+      <div style="flex:1.4; background:#F8FAFC; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; text-align:center;"><b>패턴키(SK) 조립</b><br><span style="font-size:13px; color:var(--mut);">temp:…|diff:…|rain:…|pm:…</span></div>
+      <div style="color:var(--mut); font-weight:800;">→</div>
+      <div style="flex:1.1; background:var(--greenbg); border:1.5px solid var(--green); border-radius:12px; padding:10px 12px; text-align:center;"><b>recommend-cache 조회</b><br><span style="font-size:13px; color:var(--mut);">사전생성 답변 즉시 반환</span></div>
+    </div>
+
+    <!-- SK 예시 -->
+    <p style="margin-top:16px; font-family:ui-monospace,Consolas,monospace; font-size:16.5px; background:#0F172A; color:#E2E8F0; border-radius:10px; padding:10px 16px;">
+      SK = temp:<b style="color:#FBBF24;">20-24</b> | diff:<b style="color:#FBBF24;">small</b> | rain:<b style="color:#FBBF24;">none</b> | pm:<b style="color:#FBBF24;">normal</b> | wind:<b style="color:#FBBF24;">calm</b> | uv:<b style="color:#FBBF24;">high</b> | pty:<b style="color:#FBBF24;">none</b>
+    </p>
+
+    <!-- 도메인 표 -->
+    <table style="margin-top:12px;">
+      <tr><th>변수</th><th>기준 데이터</th><th>단계(도메인)</th><th style="width:9%;">경우</th></tr>
+      <tr><td>temp 기온대</td><td>예보 최저기온(없으면 실황)</td><td>35↑ ~ -11↓ 5℃ 간격</td><td>10</td></tr>
+      <tr><td>diff 일교차</td><td>예보 최고−최저</td><td>none·small·normal·large·xlarge</td><td>5</td></tr>
+      <tr><td>rain 강수량</td><td>예보 RN1 최대</td><td>none·drizzle·light·moderate·heavy</td><td>5</td></tr>
+      <tr><td>pm 미세먼지</td><td>PM10·PM2.5 등급 결합</td><td>good·normal·bad·very_bad</td><td>4</td></tr>
+      <tr><td>wind 바람 · uv 자외선 · pty 형태</td><td>풍속 / UV(현재시각 기준 +6시간 최대) / 강수형태</td><td>각 3단계 (calm~strong / low~high / none·rain·snow)</td><td>3×3×3</td></tr>
+    </table>
+    <p class="lead center" style="margin-top:12px;">10 × 5 × 5 × 4 × 3 × 3 × 3 = <b class="amber">27,000 전조합</b> → 어떤 날씨가 와도 <b>캐시 미스 0</b></p>
+  </section>
+
   <!-- 6 스케줄 -->
   <section class="slide">
     <div class="kicker">03 · Schedule</div>
